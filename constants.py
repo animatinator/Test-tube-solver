@@ -1,3 +1,3 @@
 NUM_TUBES: int = 10
-TUBES_PER_ROW: int = 5
 TUBE_DEPTH: int = 4
+NUM_ROWS: int = 2
