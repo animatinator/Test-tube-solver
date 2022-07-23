@@ -53,6 +53,16 @@ def decode(json_str: str) -> TubeBoard:
     return board
 
 
+def write_to_file(board: TubeBoard, filepath: str):
+    with open(filepath, "w") as outfile:
+        outfile.write(encode(board))
+
+def load_from_file(filepath: str) -> TubeBoard:
+    with open(filepath, "r") as infile:
+        content = "".join(infile.readlines())
+        return decode(content)
+
+
 def create_empty_state():
     board = TubeBoard(tubes=[])
     for i in range(constants.NUM_TUBES):
