@@ -9,15 +9,16 @@ _BOARD_PATH = "boards/empty.json"
 
 _BG_COLOUR = (0, 0, 0)
 
-# Tube height:width ratio. Just the depth of the tube, so that each element in the tube is square.
-_TUBE_HEIGHT_TO_WIDTH: int = constants.TUBE_DEPTH
 # Horizontal and vertical spacing as fractions of the tube width and height.
 _TUBE_HSPACING_TO_WIDTH: float = 0.5
 _TUBE_VSPACING_TO_HEIGHT: float = 0.3
-_NUM_ROWS = constants.NUM_ROWS
-_TUBES_PER_ROW: int = int((constants.NUM_TUBES + _NUM_ROWS - 1) / _NUM_ROWS)
 # The ratio of padding around the board to the size of the board
 _BOARD_PADDING_RATIO_TO_SIZE = 0.2
+
+# Tube height:width ratio. Just the depth of the tube, so that each element in the tube is square.
+_TUBE_HEIGHT_TO_WIDTH: int = constants.TUBE_DEPTH
+_NUM_ROWS = constants.NUM_ROWS
+_TUBES_PER_ROW: int = int((constants.NUM_TUBES + _NUM_ROWS - 1) / _NUM_ROWS)
 # Calculate the relative width and height of the board.
 # Units are effectively tube widths.
 # e.g. width is num tubes + (num padding * padding as fraction of tube width)
