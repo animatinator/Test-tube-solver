@@ -45,10 +45,14 @@ def decode(json_str: str) -> TubeBoard:
         f"the key '{_TUBE_BOARD_KEY}' must map to a list of tube states.")
     for tube in tube_list:
         if not (type(tube) is dict and _TUBE_STATE_KEY in tube):
-            raise ValueError(f"Could not decode JSON string '{json_string}': " +
+            raise ValueError(f"Could not decode JSON string '{json_str}': " +
             f"it contains an invalid tube definition '{tube}'. Tube definitions " +
             f"must be dictionaries with the key '{_TUBE_STATE_KEY}'")
         values = tube[_TUBE_STATE_KEY]
+        if type(values) is not list:
+            raise ValueError(f"Could not decode JSON string '{json_str}': " +
+            f"it contains an inavlid tube definition '{tube}'. Tube definitions " +
+            "must map to lists of integers.")
         board.tubes.append(TubeState(state=values))
     return board
 

@@ -20,6 +20,31 @@ class TestState(unittest.TestCase):
         board.tubes[2].state[3] = 4
         new_board = state.decode(state.encode(board))
         self.assertEqual(board, new_board)
+    
+    def test_deserialisation_not_dict(self):
+        with self.assertRaises(ValueError) as ve:
+            state.decode("[1, 2, 3]")
+        self.assertIn("must be a dictionary", str(ve.exception))
+    
+    def test_deserialisation_bad_key(self):
+        with self.assertRaises(ValueError) as ve:
+            state.decode("{\"Test\": [1, 2, 3]}")
+        self.assertIn("whose first key is 'TubeBoard'", str(ve.exception))
+    
+    def test_deserialisation_bad_tubes_list(self):
+        with self.assertRaises(ValueError) as ve:
+            state.decode("{\"TubeBoard\": 49}")
+        self.assertIn("must map to a list of tube states", str(ve.exception))
+    
+    def test_deserialisation_bad_tube_in_list(self):
+        with self.assertRaises(ValueError) as ve:
+            state.decode("{\"TubeBoard\": [{\"TubeState\": [1,2,3]}, {\"BadState\": [1,2,3]}]}")
+        self.assertIn("must be dictionaries with the key 'TubeState'", str(ve.exception))
+    
+    def test_deserialisation_bad_tube_in_list(self):
+        with self.assertRaises(ValueError) as ve:
+            state.decode("{\"TubeBoard\": [{\"TubeState\": 12345}]}")
+        self.assertIn("must map to lists of integers", str(ve.exception))
 
 
 class TestFileReadWrite(unittest.TestCase):
