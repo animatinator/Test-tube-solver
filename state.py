@@ -12,6 +12,7 @@ class TubeState:
     """Represents the state of one tube on the board."""
     # Each distinct integer value represents a different colour.
     # Mapping to colours isn't important here.
+    # Zero indicates that the space is empty.
     state: List[int]
 
 @dataclasses.dataclass
