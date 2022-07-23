@@ -1,3 +1,4 @@
+import colour_mapping
 import constants
 import pygame
 import state
@@ -5,7 +6,7 @@ from typing import Tuple
 
 
 # TODO: Make dynamically configurable.
-_BOARD_PATH = "boards/empty.json"
+_BOARD_PATH = "boards/random.json"
 
 _BG_COLOUR = (0, 0, 0)
 
@@ -46,10 +47,13 @@ class GameBoardView():
             tube_state: state.TubeState,
             position: Tuple[int, int],
             size: Tuple[int, int]):
-        # TODO: Draw individual elements.
-        pygame.draw.rect(
-            surface, (0, 0, 0),
-            pygame.Rect(position[0], position[1], size[0], size[1]))
+        element_size = size[1] / len(tube_state.state)
+        for i, element in enumerate(tube_state.state):
+            ypos = position[1] + i * element_size
+            colour = colour_mapping.map_colour(element)
+            pygame.draw.rect(
+                surface, colour,
+                pygame.Rect(position[0], ypos, size[0], element_size))
 
     def draw(self, surface: pygame.Surface):
         aspect_ratio = size[0] / size[1]
@@ -66,9 +70,6 @@ class GameBoardView():
             height = int(width / _BOARD_ASPECT_RATIO)
             pass
         topleft = (size[0] / 2 - width / 2, size[1] / 2 - height / 2)
-        # TODO: Temporary rectangle for scale testing.
-        pygame.draw.rect(surface, (255, 255, 255),
-            pygame.Rect(topleft[0], topleft[1], width, height))
 
         # RELATIVE_WIDTH is in units of test tube width.
         tube_width = width / _RELATIVE_WIDTH
@@ -76,13 +77,21 @@ class GameBoardView():
         hspacing = _TUBE_HSPACING_TO_WIDTH * tube_width
         vspacing = _TUBE_VSPACING_TO_HEIGHT * tube_height
 
+        tube_index = 0
         for row in range(_NUM_ROWS):
             for tube in range(_TUBES_PER_ROW):
+                # Handle the case where the number of tubes doesn't evenly divide into rows.
+                if tube_index >= len(self._board.tubes):
+                    break
+
                 xpos = topleft[0] + tube * (tube_width + hspacing)
                 ypos = topleft[1] + row * (tube_height + vspacing)
-                # TODO: Pass in the tube state.
-                # Passing None for now whilst blocking things out.
-                self.draw_tube(surface, None, (xpos, ypos), (tube_width, tube_height))
+                self.draw_tube(
+                    surface,
+                    self._board.tubes[tube_index],
+                    (xpos, ypos),
+                    (tube_width, tube_height))
+                tube_index += 1
 
 
 board = state.load_from_file(_BOARD_PATH)
