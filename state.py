@@ -65,10 +65,3 @@ def load_from_file(filepath: str) -> TubeBoard:
     with open(filepath, "r") as infile:
         content = "".join(infile.readlines())
         return decode(content)
-
-
-def create_empty_state():
-    board = TubeBoard(tubes=[])
-    for i in range(constants.NUM_TUBES):
-        board.tubes.append(TubeState(state=[0]*constants.TUBE_DEPTH))
-    return board
