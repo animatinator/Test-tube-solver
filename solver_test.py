@@ -51,6 +51,18 @@ class SolverTest(unittest.TestCase):
             solver.solve(board),
             [moves.Move(0, 1), moves.Move(2, 0), moves.Move(1, 2)])
 
+    def test_longer_solution(self):
+        board = state.TubeBoard(tubes=[
+            state.TubeState(state=[1, 1, 2, 3]),
+            state.TubeState(state=[2, 3, 2, 3]),
+            state.TubeState(state=[1, 2, 3, 1]),
+            state.TubeState(state=[0, 0, 0, 0]),
+            state.TubeState(state=[0, 0, 0, 0])
+        ])
+        solution = solver.solve(board)
+        self.assertIsNotNone(solution)
+        self.assertEquals(len(solution), 10)
+
 
 if __name__ == '__main__':
     unittest.main()
