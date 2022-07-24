@@ -22,6 +22,24 @@ class TestTopOfTubeInfo(unittest.TestCase):
         self.assertEqual(
             moves._TopOfTube(1, 3, 2, 0),
             moves._calculate_top_of_tube_info(tube))
+
+
+class TestEmptyTubes(unittest.TestCase):
+    def test_no_empty_tubes(self):
+        board = state.TubeBoard(tubes=[
+            state.TubeState(state=[0, 0, 1, 2]),
+            state.TubeState(state=[1, 1, 2, 2]),
+            state.TubeState(state=[0, 0, 0, 2])
+        ])
+        self.assertEqual([], moves._get_empty_tube_indices(board))
+        
+    def test_two_empty_tubes(self):
+        board = state.TubeBoard(tubes=[
+            state.TubeState(state=[0, 0, 0, 0]),
+            state.TubeState(state=[1, 1, 2, 2]),
+            state.TubeState(state=[0, 0, 0, 0])
+        ])
+        self.assertEqual([0, 2], moves._get_empty_tube_indices(board))
  
 
 class TestPossibleMoves(unittest.TestCase):   
@@ -48,6 +66,14 @@ class TestPossibleMoves(unittest.TestCase):
             state.TubeState(state=[0, 1, 1, 1])
         ])
         self.assertEqual([], moves.get_possible_moves(board))
+    
+    def test_can_move_into_empty_tube(self):
+        board = state.TubeBoard(tubes=[
+            state.TubeState(state=[1, 1, 2, 2]),
+            state.TubeState(state=[0, 0, 0, 0]),
+            state.TubeState(state=[2, 2, 1, 1])
+        ])
+        self.assertEqual([moves.Move(0, 1), moves.Move(2, 1)], moves.get_possible_moves(board))
 
 
 class TestApplyMove(unittest.TestCase):

@@ -55,9 +55,14 @@ def _calculate_top_of_tube_info(tube: state.TubeState, index: int = 0) -> _TopOf
 
     return _TopOfTube(element, depth, startIndex, index)
 
+def _is_empty(tube: state.TubeState) -> bool:
+    return all(elem == 0 for elem in tube.state)
+
+def _get_empty_tube_indices(board: state.TubeBoard) -> List[int]:
+    return [i for i, tube in enumerate(board.tubes) if _is_empty(tube)]
+
 def get_possible_moves(board: state.TubeBoard) -> List[Move]:
     """Find all the possible moves in a given board state."""
-    # TODO: This will ignore empty tubes as possible receivers. Need to handle that.
     colours_to_tubes = defaultdict(list)
     for i, tube in enumerate(board.tubes):
         top_of_tube = _calculate_top_of_tube_info(tube, i)
@@ -74,6 +79,13 @@ def get_possible_moves(board: state.TubeBoard) -> List[Move]:
             if dest.available_space >= source.depth:
                 moves.append(Move(source.location_on_board, dest.location_on_board))
         pass
+
+    # Every tube can pour into an empty tube.
+    for empty_index in _get_empty_tube_indices(board):
+        moves = moves + [
+            Move(src=i, dest=empty_index) for i in range(len(board.tubes))
+            if i != empty_index
+            ]
     
     return moves
 

@@ -33,13 +33,23 @@ class TestIsSolved(unittest.TestCase):
 
 class SolverTest(unittest.TestCase):
 
-    def test_simple_solve(self):
+    def test_one_step_solve(self):
         board = state.TubeBoard(tubes=[
             state.TubeState(state=[0, 0, 1, 1]),
             state.TubeState(state=[0, 0, 1, 1]),
             state.TubeState(state=[2, 2, 2, 2])
         ])
         self.assertEqual(solver.solve(board), [moves.Move(0, 1)])
+    
+    def test_three_step_solve(self):
+        board = state.TubeBoard(tubes=[
+            state.TubeState(state=[1, 1, 2, 2]),
+            state.TubeState(state=[0, 0, 0, 0]),
+            state.TubeState(state=[2, 2, 1, 1])
+        ])
+        self.assertEqual(
+            solver.solve(board),
+            [moves.Move(0, 1), moves.Move(2, 0), moves.Move(1, 2)])
 
 
 if __name__ == '__main__':
