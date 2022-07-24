@@ -1,9 +1,10 @@
+import moves
 import solver
 import state
 import unittest
 
 
-class SolverTest(unittest.TestCase):
+class TestIsSolved(unittest.TestCase):
 
     def test_solved_tube(self):
         tube = state.TubeState(state=[1, 1, 1, 1])
@@ -28,6 +29,18 @@ class SolverTest(unittest.TestCase):
             state.TubeState(state=[2, 2, 2, 2])
         ])
         self.assertFalse(solver.is_solved(board))
+
+
+class SolverTest(unittest.TestCase):
+
+    def test_simple_solve(self):
+        board = state.TubeBoard(tubes=[
+            state.TubeState(state=[0, 0, 1, 1]),
+            state.TubeState(state=[0, 0, 1, 1]),
+            state.TubeState(state=[2, 2, 2, 2])
+        ])
+        self.assertEqual(solver.solve(board), [moves.Move(0, 1)])
+
 
 if __name__ == '__main__':
     unittest.main()
