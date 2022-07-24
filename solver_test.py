@@ -61,7 +61,7 @@ class SolverTest(unittest.TestCase):
         ])
         solution = solver.solve(board)
         self.assertIsNotNone(solution)
-        self.assertEquals(len(solution), 10)
+        self.assertEqual(len(solution), 10)
 
 
 if __name__ == '__main__':
