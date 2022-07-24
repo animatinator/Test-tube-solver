@@ -1,6 +1,7 @@
 import moves
 import state
 import unittest
+import utils
 
 
 class TestTopOfTubeInfo(unittest.TestCase):
@@ -23,7 +24,7 @@ class TestTopOfTubeInfo(unittest.TestCase):
             moves._calculate_top_of_tube_info(tube))
  
 
-class TestMoves(unittest.TestCase):   
+class TestPossibleMoves(unittest.TestCase):   
     def test_single_possible_move(self):
         board = state.TubeBoard(tubes=[
             state.TubeState(state=[0, 0, 1, 2]),
@@ -47,6 +48,81 @@ class TestMoves(unittest.TestCase):
             state.TubeState(state=[0, 1, 1, 1])
         ])
         self.assertEqual([], moves.get_possible_moves(board))
+
+
+class TestApplyMove(unittest.TestCase):
+    def test_illegal_move_same_index(self):
+        board = utils.create_empty_state()
+        with self.assertRaises(ValueError) as ve:
+            moves.apply_move(board, moves.Move(1, 1))
+        self.assertIn("source and destination of a move cannot be equal", str(ve.exception))
+
+    def test_illegal_move_source_out_of_range(self):
+        board = utils.create_empty_state()
+        with self.assertRaises(ValueError) as ve:
+            moves.apply_move(board, moves.Move(-1, 1))
+        self.assertIn("source is out of range", str(ve.exception))
+
+    def test_illegal_move_destination_out_of_range(self):
+        board = utils.create_empty_state()
+        with self.assertRaises(ValueError) as ve:
+            moves.apply_move(board, moves.Move(1, 1000))
+        self.assertIn("destination is out of range", str(ve.exception))
+
+    def test_illegal_move_not_enough_space(self):
+        board = state.TubeBoard(tubes=[
+            state.TubeState(state=[0, 0, 1, 2]),
+            state.TubeState(state=[1, 1, 1, 2]),
+            state.TubeState(state=[0, 0, 0, 2])
+        ])
+        with self.assertRaises(ValueError) as ve:
+            moves.apply_move(board, moves.Move(1, 0))
+        self.assertIn(
+            "trying to move liquid of depth 3 into tube with only 2 free",
+            str(ve.exception))
+
+    def test_apply_simple_move(self):
+        board = state.TubeBoard(tubes=[
+            state.TubeState(state=[0, 0, 1, 2]),
+            state.TubeState(state=[1, 2, 2, 2]),
+            state.TubeState(state=[0, 0, 0, 2])
+        ])
+        want_board = state.TubeBoard(tubes=[
+            state.TubeState(state=[0, 1, 1, 2]),
+            state.TubeState(state=[0, 2, 2, 2]),
+            state.TubeState(state=[0, 0, 0, 2])
+        ])
+        got_board = moves.apply_move(board, moves.Move(1, 0))
+        self.assertEqual(want_board, got_board)
+        
+    def test_move_with_depth(self):
+        board = state.TubeBoard(tubes=[
+            state.TubeState(state=[0, 0, 1, 2]),
+            state.TubeState(state=[1, 1, 2, 2]),
+            state.TubeState(state=[0, 0, 0, 2])
+        ])
+        want_board = state.TubeBoard(tubes=[
+            state.TubeState(state=[1, 1, 1, 2]),
+            state.TubeState(state=[0, 0, 2, 2]),
+            state.TubeState(state=[0, 0, 0, 2])
+        ])
+        got_board = moves.apply_move(board, moves.Move(1, 0))
+        self.assertEqual(want_board, got_board)
+    
+    def test_move_does_not_modify_original_board(self):
+        board = state.TubeBoard(tubes=[
+            state.TubeState(state=[0, 0, 1, 2]),
+            state.TubeState(state=[1, 1, 2, 2]),
+            state.TubeState(state=[0, 0, 0, 2])
+        ])
+        want_original_board = state.TubeBoard(tubes=[
+            state.TubeState(state=[0, 0, 1, 2]),
+            state.TubeState(state=[1, 1, 2, 2]),
+            state.TubeState(state=[0, 0, 0, 2])
+        ])
+        moves.apply_move(board, moves.Move(1, 0))
+        self.assertEqual(want_original_board, board)
+
 
 if __name__ == '__main__':
     unittest.main()

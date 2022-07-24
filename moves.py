@@ -1,4 +1,5 @@
 from collections import defaultdict
+import copy
 import dataclasses
 from itertools import combinations
 import state
@@ -76,6 +77,31 @@ def get_possible_moves(board: state.TubeBoard) -> List[Move]:
     
     return moves
 
+def _validate_move_bounds(board: state.TubeBoard, move: Move):
+    if move.src == move.dest:
+        raise ValueError(f"Error applying move {move}: source and destination of a move cannot " +
+            "be equal.")
+    if move.src < 0 or move.src >= len(board.tubes):
+        raise ValueError(f"Error applying move {move}: source is out of range.")
+    if move.dest < 0 or move.dest >= len(board.tubes):
+        raise ValueError(f"Error applying move {move}: destination is out of range.")
+
 def apply_move(board: state.TubeBoard, move: Move) -> state.TubeBoard:
-    # TODO
-    return board
+    """Apply a move and return a new board with the result.
+    
+    This will also validate that the move is legal and raise a ValueError if not.
+    """
+    _validate_move_bounds(board, move)
+
+    source_info = _calculate_top_of_tube_info(board.tubes[move.src])
+    dest_info = _calculate_top_of_tube_info(board.tubes[move.dest])
+
+    if dest_info.available_space < source_info.depth:
+        raise ValueError(f"Error applying move {move}: trying to move liquid of depth " +
+        f"{source_info.depth} into tube with only {dest_info.available_space} free.")
+
+    new_board = copy.deepcopy(board)
+    new_board.tubes[move.dest].state[dest_info.available_space - source_info.depth:dest_info.available_space] = [source_info.top_colour] * source_info.depth
+    new_board.tubes[move.src].state[source_info.available_space:source_info.available_space + source_info.depth] = [0] * source_info.depth
+
+    return new_board
