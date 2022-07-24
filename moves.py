@@ -66,7 +66,9 @@ def get_possible_moves(board: state.TubeBoard) -> List[Move]:
     colours_to_tubes = defaultdict(list)
     for i, tube in enumerate(board.tubes):
         top_of_tube = _calculate_top_of_tube_info(tube, i)
-        colours_to_tubes[top_of_tube.top_colour].append(top_of_tube)
+        # Zero is empty - these are handled separately later.
+        if top_of_tube.top_colour != 0:
+            colours_to_tubes[top_of_tube.top_colour].append(top_of_tube)
     
     moves = []
 
@@ -80,11 +82,13 @@ def get_possible_moves(board: state.TubeBoard) -> List[Move]:
                 moves.append(Move(source.location_on_board, dest.location_on_board))
         pass
 
-    # Every tube can pour into an empty tube.
+    # Handly empty tubes - every tube can pour into an empty tube.
     for empty_index in _get_empty_tube_indices(board):
         moves = moves + [
-            Move(src=i, dest=empty_index) for i in range(len(board.tubes))
-            if i != empty_index
+                Move(src=i, dest=empty_index) for i in range(len(board.tubes))
+                # But, we shouldn't pour from empty tubes into empty tubes or
+                # we'll end up infinitely recursing.
+                if i != empty_index and not _is_empty(board.tubes[i])
             ]
     
     return moves

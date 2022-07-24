@@ -74,6 +74,24 @@ class TestPossibleMoves(unittest.TestCase):
             state.TubeState(state=[2, 2, 1, 1])
         ])
         self.assertEqual([moves.Move(0, 1), moves.Move(2, 1)], moves.get_possible_moves(board))
+    
+    def test_two_empty_tubes(self):
+        board = state.TubeBoard(tubes=[
+            state.TubeState(state=[1, 1, 2, 2]),
+            state.TubeState(state=[1, 1, 2, 2]),
+            state.TubeState(state=[0, 0, 0, 0]),
+            state.TubeState(state=[0, 0, 0, 0])
+        ])
+        self.assertEqual(4, len(moves.get_possible_moves(board)))
+    
+    def test_do_not_pour_empty_into_empty(self):
+        # If we were to generate moves for pouring empty tubes into empty tubes, we could end up
+        # infinitely recursing.
+        board = state.TubeBoard(tubes=[
+            state.TubeState(state=[0, 0, 0, 0]),
+            state.TubeState(state=[0, 0, 0, 0])
+        ])
+        self.assertEqual([], moves.get_possible_moves(board))
 
 
 class TestApplyMove(unittest.TestCase):
