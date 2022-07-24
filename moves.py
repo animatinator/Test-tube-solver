@@ -80,7 +80,6 @@ def get_possible_moves(board: state.TubeBoard) -> List[Move]:
         for source, dest in combinations:
             if dest.available_space >= source.depth:
                 moves.append(Move(source.location_on_board, dest.location_on_board))
-        pass
 
     # Handly empty tubes - every tube can pour into an empty tube.
     for empty_index in _get_empty_tube_indices(board):
