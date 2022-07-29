@@ -1,3 +1,5 @@
+import copy
+
 import tkinter as tk
 
 
@@ -9,5 +11,18 @@ class ColourPicker(tk.Frame):
     def __init__(self, parent):
         super().__init__(parent, background="pink")
 
-        self.label = tk.Label(self, text='Colour picker goes here', background="pink")
-        self.label.pack(fill=tk.BOTH, expand=True)
+        self._frames = []
+
+        self._frames.append(tk.Frame(self, background="red"))
+        self._frames.append(tk.Frame(self, background="blue"))
+        self._frames.append(tk.Frame(self, background="green"))
+
+        def create_colour_picker_callback(i):
+            return lambda event: self._pick_colour(i, event)
+
+        for i, frame in enumerate(self._frames):
+            frame.pack(fill=tk.BOTH, side=tk.LEFT, expand=True)
+            frame.bind("<Button-1>", create_colour_picker_callback(i))
+
+    def _pick_colour(self, i, event):
+        print('Clicked on button '+str(i))
