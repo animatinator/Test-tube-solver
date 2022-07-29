@@ -1,6 +1,7 @@
 import copy
 
 import tkinter as tk
+from tkinter.colorchooser import askcolor
 
 
 class ColourPicker(tk.Frame):
@@ -25,4 +26,10 @@ class ColourPicker(tk.Frame):
             frame.bind("<Button-1>", create_colour_picker_callback(i))
 
     def _pick_colour(self, i, event):
-        print('Clicked on button '+str(i))
+        _, hex_col = askcolor(color=self._frames[i]["background"])
+        self._frames[i].configure(background=hex_col)
+        self._update_colours()
+    
+    def _update_colours(self):
+        print('Colours have changed.')
+        print('TODO: Update the model via the controller.')
