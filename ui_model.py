@@ -21,6 +21,9 @@ class UiModel:
     def get_colours(self):
         return self._colours
     
+    def get_colour_for_index(self, index: int) -> str:
+        return self._colours[index]
+    
     def update_colours(self, colours: List[str]):
         self._colours = colours
     

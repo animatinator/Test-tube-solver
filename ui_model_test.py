@@ -10,6 +10,10 @@ class ColourStateTest(unittest.TestCase):
 
         model.update_colours(["green", "red", "blue"])
         self.assertEqual(model.get_colours(), ["green", "red", "blue"])
+    
+    def test_get_colour_for_index(self):
+        model = ui_model.UiModel(initial_colours=["green", "red", "blue"])
+        self.assertEqual(model.get_colour_for_index(1), "red")
 
 
 class BoardStateTest(unittest.TestCase):

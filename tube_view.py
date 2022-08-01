@@ -1,6 +1,7 @@
 import tkinter as tk
 
 import controller_interface
+import ui_model
 
 
 class TubeView(tk.Frame):
@@ -8,11 +9,13 @@ class TubeView(tk.Frame):
     def __init__(
             self,
             parent,
+            model: ui_model.UiModel,
             controller: controller_interface.Controller,
             index: int,
             depth: int):
         super().__init__(parent)
 
+        self._model = model
         self._controller = controller
         self._index = index
 
@@ -23,7 +26,6 @@ class TubeView(tk.Frame):
         self._frames = []
 
         for index, elem in enumerate(self._state):
-            # TODO: Get colour from the model.
             new_frame = tk.Frame(self._frames_conainer, background=self._get_colour_value(elem))
             self._frames.append(new_frame)
             frame.pack(fill=tk.BOTH, side=tk.TOP, expand=True)
@@ -36,8 +38,7 @@ class TubeView(tk.Frame):
         # '0' signifies empty.
         if colour_index == 0:
             return "white"
-        # TODO: Get colour from the model.
-        return "white"
+        return self._model.get_colour_for_index(colour_index - 1)
     
     def _create_colour_picker_callback(index: int):
         return lambda event: self._pick_colour_for_index(index)
