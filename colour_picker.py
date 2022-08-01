@@ -42,6 +42,7 @@ class ColourPicker(tk.Frame):
         self._update_colours()
     
     def _update_colours(self):
+        self._assert_has_controller()
         self._controller.update_colours([frame["background"] for frame in self._frames])
 
     def _create_colour_picker_callback(self, i):
@@ -78,3 +79,7 @@ class ColourPicker(tk.Frame):
             m.tk_popup(event.x_root, event.y_root)
         finally:
             m.grab_release()
+    
+    def _assert_has_controller(self):
+        if not self._controller:
+            raise AssertionError("Trying to use the controller before it has been set!")
