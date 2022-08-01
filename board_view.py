@@ -21,10 +21,13 @@ class TubeBoardView(tk.Frame):
     
     def set_controller(self, controller: controller_interface.Controller):
         self._controller = controller
+        for tube in self._tubes:
+            tube.set_controller(self._controller)
     
     def _add_tube(self):
         index = len(self._tubes)
         tube = tube_view.TubeView(self, self._model, index, width=100)
+        tube.set_controller(self._controller)
         self._tubes.append(tube)
         tube.pack(fill=tk.Y, side=tk.LEFT, expand=True, padx=20, pady=10)
     

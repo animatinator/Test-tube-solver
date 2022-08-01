@@ -23,3 +23,4 @@ class MainWindow(tk.Frame):
     
     def set_controller(self, controller: controller_interface.Controller):
         self._colour_picker.set_controller(controller)
+        self._board_view.set_controller(controller)
