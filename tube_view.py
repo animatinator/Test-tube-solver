@@ -1,5 +1,6 @@
 import tkinter as tk
 
+import constants
 import controller_interface
 import ui_model
 
@@ -10,13 +11,13 @@ class TubeView(tk.Frame):
             self,
             parent,
             model: ui_model.UiModel,
-            controller: controller_interface.Controller,
             index: int,
-            depth: int):
+            depth: int = constants.TUBE_DEPTH):
         super().__init__(parent)
 
         self._model = model
-        self._controller = controller
+        # This will be set by set_controller later.
+        self._controller = None
         self._index = index
 
         # Note: '0' means empty. Numbers above zero map to defined colours.
@@ -30,6 +31,9 @@ class TubeView(tk.Frame):
             self._frames.append(new_frame)
             frame.pack(fill=tk.BOTH, side=tk.TOP, expand=True)
             self._bind_events_for_frame_at_index(new_frame, index)
+    
+    def set_controller(self, controller: controller_interface.Controller):
+        self._controller = controller
     
     def set_index(new_index: int):
         self._index = new_index
@@ -56,4 +60,9 @@ class TubeView(tk.Frame):
         new_colour = self._get_colour_value(new_colour_index)
         self._frames[index].configure(background=new_colour)
 
+        self._assert_has_controller()
         self._controller.update_tube_state(self._index, self._state)
+    
+    def _assert_has_controller(self):
+        if not self._controller:
+            raise AssertionError("Trying to use the controller before it has been set!")
