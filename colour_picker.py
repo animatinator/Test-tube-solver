@@ -60,13 +60,11 @@ class ColourPicker(tk.Frame):
             self._bind_events_for_frame_at_index(frame, index)
     
     def _delete_colour(self, index):
-        print(f"Actually delete colour at position {index}")
         self._frames[index].pack_forget()
         self._frames[index:] = self._frames[index + 1:]
         self._rebind_frame_events()
     
     def _show_delete_context_menu(self, i, event):
-        print(f"Delete colour at position {i}?")
         m = tk.Menu(self, tearoff=False)
         m.add_command(label="Delete colour", command=lambda: self._delete_colour(i))
         try:
