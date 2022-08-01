@@ -1,5 +1,6 @@
 import tkinter as tk
 
+import constants
 import ui_controller
 import ui_model
 import view
@@ -11,7 +12,7 @@ def main():
     window.geometry("800x600")
 
     initial_colours = ["red", "green", "blue"]
-    model = ui_model.UiModel(initial_colours)
+    model = ui_model.UiModel(initial_colours, tube_depth=constants.TUBE_DEPTH)
 
     main_window = view.MainWindow(window, model)
     main_window.pack(fill=tk.BOTH, expand=True)

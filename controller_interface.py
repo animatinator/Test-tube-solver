@@ -10,3 +10,7 @@ class Controller(ABC):
     @abstractmethod
     def update_colours(self, colours: List[str]):
         pass
+
+    @abstractmethod
+    def update_tube_state(self, index: int, state: List[int]):
+        pass

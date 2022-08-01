@@ -16,3 +16,6 @@ class UiController(controller_interface.Controller):
     
     def update_colours(self, colours: List[str]):
         self._model.update_colours(colours)
+    
+    def update_tube_state(self, index: int, state: List[int]):
+        self._model.update_tube_state(index, state)
