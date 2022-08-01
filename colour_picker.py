@@ -1,7 +1,10 @@
 import copy
+from typing import List
 
 import tkinter as tk
 from tkinter.colorchooser import askcolor
+import controller_interface
+import ui_model
 
 
 class ColourPicker(tk.Frame):
@@ -9,7 +12,7 @@ class ColourPicker(tk.Frame):
     
     These are used to define the selection of colours used.
     """
-    def __init__(self, parent):
+    def __init__(self, parent, initial_colours: List[str]):
         super().__init__(parent, background="pink")
 
         self._frames_container = tk.Frame(self)
@@ -24,9 +27,14 @@ class ColourPicker(tk.Frame):
 
         self._frames = []
 
-        self._add_colour("red")
-        self._add_colour("blue")
-        self._add_colour("green")
+        for colour in initial_colours:
+            self._add_colour(colour)
+        
+        # The controller will be set by a later call to set_controller.
+        self._controller = None
+    
+    def set_controller(self, controller: controller_interface.Controller):
+        self._controller = controller
 
     def _pick_colour(self, i, event):
         _, hex_col = askcolor(color=self._frames[i]["background"])
@@ -34,8 +42,7 @@ class ColourPicker(tk.Frame):
         self._update_colours()
     
     def _update_colours(self):
-        print('Colours have changed.')
-        print('TODO: Update the model via the controller.')
+        self._controller.update_colours([frame["background"] for frame in self._frames])
 
     def _create_colour_picker_callback(self, i):
         return lambda event: self._pick_colour(i, event)
