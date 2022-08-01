@@ -24,20 +24,9 @@ class ColourPicker(tk.Frame):
 
         self._frames = []
 
-        self._frames.append(tk.Frame(self._frames_container, background="red"))
-        self._frames.append(tk.Frame(self._frames_container, background="blue"))
-        self._frames.append(tk.Frame(self._frames_container, background="green"))
-
-        def create_colour_picker_callback(i):
-            return lambda event: self._pick_colour(i, event)
-
-        def create_del_context_callback(i):
-            return lambda event: self._show_delete_context_menu(i, event)
-
-        for i, frame in enumerate(self._frames):
-            frame.pack(fill=tk.BOTH, side=tk.LEFT, expand=True)
-            frame.bind("<Button-1>", create_colour_picker_callback(i))
-            frame.bind("<Button-3>", create_del_context_callback(i))
+        self._add_colour("red")
+        self._add_colour("blue")
+        self._add_colour("green")
 
     def _pick_colour(self, i, event):
         _, hex_col = askcolor(color=self._frames[i]["background"])
@@ -47,9 +36,21 @@ class ColourPicker(tk.Frame):
     def _update_colours(self):
         print('Colours have changed.')
         print('TODO: Update the model via the controller.')
+
+    def _create_colour_picker_callback(self, i):
+        return lambda event: self._pick_colour(i, event)
+
+    def _create_del_context_callback(self, i):
+        return lambda event: self._show_delete_context_menu(i, event)
     
-    def _add_colour(self):
-        print('Time to add a new colour.')
+    def _add_colour(self, initial_colour="white"):
+        index = len(self._frames)
+        frame = tk.Frame(self._frames_container, background=initial_colour)
+        self._frames.append(frame)
+        frame.pack(fill=tk.BOTH, side=tk.LEFT, expand=True)
+
+        frame.bind("<Button-1>", self._create_colour_picker_callback(index))
+        frame.bind("<Button-3>", self._create_del_context_callback(index))
     
     def _show_delete_context_menu(self, i, event):
         print(f"Delete colour at position {i}?")
