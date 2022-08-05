@@ -18,7 +18,7 @@ class UiModel:
         self._board = state.TubeBoard(
             tubes=[state.TubeState([0]*tube_depth)]*initial_tubes)
     
-    def get_colours(self):
+    def get_colours(self) -> List[str]:
         return self._colours
     
     def get_colour_for_index(self, index: int) -> str:
@@ -27,7 +27,7 @@ class UiModel:
     def update_colours(self, colours: List[str]):
         self._colours = colours
     
-    def get_tube_board(self):
+    def get_tube_board(self) -> state.TubeBoard:
         return self._board
 
     def update_tube_state(self, index: int, state: List[int]):

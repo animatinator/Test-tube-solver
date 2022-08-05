@@ -1,5 +1,5 @@
 import copy
-from typing import List
+from typing import Callable, List
 
 import tkinter as tk
 from tkinter.colorchooser import askcolor
@@ -45,17 +45,17 @@ class ColourPicker(tk.Frame):
         self._assert_has_controller()
         self._controller.update_colours([frame["background"] for frame in self._frames])
 
-    def _create_colour_picker_callback(self, i):
+    def _create_colour_picker_callback(self, i) -> Callable[[tk.Event], None]:
         return lambda event: self._pick_colour(i, event)
 
-    def _create_del_context_callback(self, i):
+    def _create_del_context_callback(self, i) -> Callable[[tk.Event], None]:
         return lambda event: self._show_delete_context_menu(i, event)
 
     def _bind_events_for_frame_at_index(self, frame, index):
         frame.bind("<Button-1>", self._create_colour_picker_callback(index))
         frame.bind("<Button-3>", self._create_del_context_callback(index))    
     
-    def _add_colour(self, initial_colour="white", update_controller=True):
+    def _add_colour(self, initial_colour: str="white", update_controller: bool=True):
         index = len(self._frames)
         frame = tk.Frame(self._frames_container, background=initial_colour)
         self._frames.append(frame)
@@ -72,15 +72,15 @@ class ColourPicker(tk.Frame):
         for index, frame in enumerate(self._frames):
             self._bind_events_for_frame_at_index(frame, index)
     
-    def _delete_colour(self, index):
+    def _delete_colour(self, index: int):
         self._frames[index].pack_forget()
         self._frames[index:] = self._frames[index + 1:]
         self._rebind_frame_events()
         self._update_colours()
     
-    def _show_delete_context_menu(self, i, event):
+    def _show_delete_context_menu(self, index: int, event: tk.Event):
         m = tk.Menu(self, tearoff=False)
-        m.add_command(label="Delete colour", command=lambda: self._delete_colour(i))
+        m.add_command(label="Delete colour", command=lambda: self._delete_colour(index))
         try:
             m.tk_popup(event.x_root, event.y_root)
         finally:

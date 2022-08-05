@@ -3,7 +3,7 @@ import tkinter as tk
 import constants
 import controller_interface
 from PIL import Image, ImageTk
-from typing import List
+from typing import Callable, List
 import ui_model
 
 
@@ -62,7 +62,7 @@ class TubeView(tk.Frame):
             return "white"
         return self._model.get_colour_for_index(colour_index - 1)
     
-    def _create_colour_picker_callback(self, index: int):
+    def _create_colour_picker_callback(self, index: int) -> Callable[[tk.Event], None]:
         return lambda event: self._pick_colour_for_index(event, index)
 
     def _bind_events_for_frame_at_index(self, frame: tk.Frame, index: int):
@@ -83,7 +83,7 @@ class TubeView(tk.Frame):
         colours = self._model.get_colours()
         m = tk.Menu(self, tearoff=False)
 
-        def _create_colour_setter(colour_id: int, index: int):
+        def _create_colour_setter(colour_id: int, index: int) -> Callable[[], None]:
             return lambda: self._set_colour_at_index(colour_id, index)
 
         # Add the option for emptying this element.
