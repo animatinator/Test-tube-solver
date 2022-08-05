@@ -2,6 +2,7 @@ import tkinter as tk
 
 import constants
 import controller_interface
+from PIL import Image, ImageTk
 import ui_model
 
 
@@ -50,23 +51,48 @@ class TubeView(tk.Frame):
         return self._model.get_colour_for_index(colour_index - 1)
     
     def _create_colour_picker_callback(self, index: int):
-        return lambda event: self._pick_colour_for_index(index)
+        return lambda event: self._pick_colour_for_index(event, index)
 
     def _bind_events_for_frame_at_index(self, frame: tk.Frame, index: int):
         frame.bind("<Button-1>", self._create_colour_picker_callback(index))
 
-    def _pick_colour(self, current_colour: int) -> int:
-        print(f"TODO: Choose new colour. Current: {current_colour}")
-        return current_colour
-    
-    def _pick_colour_for_index(self, index: int):
-        new_colour_index = self._pick_colour(self._state[index])
+    def _set_colour_at_index(self, new_colour_index: int, index: int):
         self._state[index] = new_colour_index
         new_colour = self._get_colour_value(new_colour_index)
         self._frames[index].configure(background=new_colour)
 
         self._assert_has_controller()
         self._controller.update_tube_state(self._index, self._state)
+    
+    def _create_colour_icon(self, colour: str) -> ImageTk.PhotoImage:
+        return ImageTk.PhotoImage(Image.new(mode="RGB", size=(50, 50), color=colour))
+
+    def _pick_colour_for_index(self, event: tk.Event, index: int) -> int:
+        current_colour = self._state[index]
+        colours = self._model.get_colours()
+        m = tk.Menu(self, tearoff=False)
+
+        def _create_colour_setter(colour_id: int, index: int):
+            return lambda: self._set_colour_at_index(colour_id, index)
+
+        # Add the option for emptying this element.
+        m.add_command(label="Empty", command=_create_colour_setter(0, index))
+
+        images = [self._create_colour_icon(colour) for colour in colours]
+
+        for i, colour in enumerate(colours):
+            # Adding one to each colour index because zero indicates empty.
+            m.add_command(
+                image=images[i],
+                compound=tk.LEFT,
+                command=_create_colour_setter(i+1, index))
+
+        try:
+            m.tk_popup(event.x_root, event.y_root)
+        finally:
+            m.grab_release()
+
+        return current_colour
     
     def _assert_has_controller(self):
         if not self._controller:
