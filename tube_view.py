@@ -49,6 +49,9 @@ class TubeView(tk.Frame):
             self._update_colour_for_element_at_index(index)
 
     def _update_colour_for_element_at_index(self, index: int):
+        # If the colour index for this element is now out of range, reset it to empty.
+        if self._state[index] > len(self._model.get_colours()):
+            self._state[index] = 0
         self._frames[index].configure(background=self._get_colour_value(self._state[index]))
     
     def _get_colour_value(self, colour_index: int) -> str:
