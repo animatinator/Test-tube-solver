@@ -30,6 +30,10 @@ class TubeBoardView(tk.Frame):
         tube.set_controller(self._controller)
         self._tubes.append(tube)
         tube.pack(fill=tk.Y, side=tk.LEFT, expand=True, padx=20, pady=10)
+
+    def notify_colours_changed(self):
+        for tube in self._tubes:
+            tube.notify_colours_changed()
     
     def _assert_has_controller(self):
         if not self._controller:

@@ -43,6 +43,13 @@ class TubeView(tk.Frame):
     
     def set_index(new_index: int):
         self._index = new_index
+
+    def notify_colours_changed(self):
+        for index in range(len(self._state)):
+            self._update_colour_for_element_at_index(index)
+
+    def _update_colour_for_element_at_index(self, index: int):
+        self._frames[index].configure(background=self._get_colour_value(self._state[index]))
     
     def _get_colour_value(self, colour_index: int) -> str:
         # '0' signifies empty.
@@ -58,8 +65,7 @@ class TubeView(tk.Frame):
 
     def _set_colour_at_index(self, new_colour_index: int, index: int):
         self._state[index] = new_colour_index
-        new_colour = self._get_colour_value(new_colour_index)
-        self._frames[index].configure(background=new_colour)
+        self._update_colour_for_element_at_index(index)
 
         self._assert_has_controller()
         self._controller.update_tube_state(self._index, self._state)
