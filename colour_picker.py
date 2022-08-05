@@ -28,7 +28,7 @@ class ColourPicker(tk.Frame):
         self._frames = []
 
         for colour in initial_colours:
-            self._add_colour(colour)
+            self._add_colour(colour, update_controller=False)
         
         # The controller will be set by a later call to set_controller.
         self._controller = None
@@ -55,13 +55,18 @@ class ColourPicker(tk.Frame):
         frame.bind("<Button-1>", self._create_colour_picker_callback(index))
         frame.bind("<Button-3>", self._create_del_context_callback(index))    
     
-    def _add_colour(self, initial_colour="white"):
+    def _add_colour(self, initial_colour="white", update_controller=True):
         index = len(self._frames)
         frame = tk.Frame(self._frames_container, background=initial_colour)
         self._frames.append(frame)
         frame.pack(fill=tk.BOTH, side=tk.LEFT, expand=True)
 
         self._bind_events_for_frame_at_index(frame, index)
+
+        # Updating the controller is optional because we won't yet have a controller when this
+        # method is first called (during construction).
+        if update_controller:
+            self._update_colours()
 
     def _rebind_frame_events(self):
         for index, frame in enumerate(self._frames):
@@ -71,6 +76,7 @@ class ColourPicker(tk.Frame):
         self._frames[index].pack_forget()
         self._frames[index:] = self._frames[index + 1:]
         self._rebind_frame_events()
+        self._update_colours()
     
     def _show_delete_context_menu(self, i, event):
         m = tk.Menu(self, tearoff=False)
