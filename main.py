@@ -18,7 +18,7 @@ def main():
         tube_depth=constants.TUBE_DEPTH,
         initial_tubes=initial_tubes)
 
-    main_window = view.MainWindow(window, model, initial_tubes)
+    main_window = view.MainWindow(window, model)
     main_window.pack(fill=tk.BOTH, expand=True)
     
     controller = ui_controller.UiController(model, main_window)

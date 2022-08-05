@@ -1,13 +1,15 @@
 import tkinter as tk
 
 import controller_interface
+import state
 import tube_view
+from typing import List
 import ui_model
 
 
 class TubeBoardView(tk.Frame):
     """Displays the range of editable test tubes."""
-    def __init__(self, parent, model: ui_model.UiModel, initial_tubes: int):
+    def __init__(self, parent, model: ui_model.UiModel, initial_tubes: state.TubeBoard):
         super().__init__(parent)
 
         self._model = model
@@ -16,17 +18,17 @@ class TubeBoardView(tk.Frame):
 
         self._tubes = []
 
-        for i in range(initial_tubes):
-            self._add_tube()
+        for tube in initial_tubes.tubes:
+            self._add_tube(initial_state=tube.state)
     
     def set_controller(self, controller: controller_interface.Controller):
         self._controller = controller
         for tube in self._tubes:
             tube.set_controller(self._controller)
     
-    def _add_tube(self):
+    def _add_tube(self, initial_state: List[int]):
         index = len(self._tubes)
-        tube = tube_view.TubeView(self, self._model, index, width=100)
+        tube = tube_view.TubeView(self, self._model, index, width=100, initial_state=initial_state)
         tube.set_controller(self._controller)
         self._tubes.append(tube)
         tube.pack(fill=tk.Y, side=tk.LEFT, expand=True, padx=20, pady=10)

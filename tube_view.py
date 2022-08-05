@@ -3,6 +3,7 @@ import tkinter as tk
 import constants
 import controller_interface
 from PIL import Image, ImageTk
+from typing import List
 import ui_model
 
 
@@ -15,6 +16,7 @@ class TubeView(tk.Frame):
             index: int,
             depth: int = constants.TUBE_DEPTH,
             width: int = 100,
+            initial_state: List[int] = [0] * constants.TUBE_DEPTH,
             **kwargs):
         super().__init__(parent, width=width, **kwargs)
 
@@ -25,7 +27,7 @@ class TubeView(tk.Frame):
 
         # Note: '0' means empty. Numbers above zero map to defined colours.
         # So '1' maps to the zeroth defined colour etc.
-        self._state = [0] * depth
+        self._state = initial_state
 
         self._frames_container = tk.Frame(self)
         self._frames = []
