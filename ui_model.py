@@ -38,3 +38,6 @@ class UiModel:
     
     def delete_tube(self, index: int):
         self._board.tubes[index:] = self._board.tubes[index+1:]
+    
+    def get_tube_depth(self) -> int:
+        return self._tube_depth
