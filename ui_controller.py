@@ -4,6 +4,7 @@ import controller_interface
 import moves
 import solution_printer
 import solver
+import state
 from typing import List
 import ui_model
 import view
@@ -30,6 +31,12 @@ class UiController(controller_interface.Controller):
     
     def delete_tube(self, index: int):
         self._model.delete_tube(index)
+    
+    def save_state_to_file(self, filepath: str):
+        state.write_to_file(
+            state.SavedPuzzle(
+                self._model.get_tube_board(), self._model.get_colours()),
+            filepath)
 
     def run_solver(self):
         puzzle = self._model.get_tube_board()

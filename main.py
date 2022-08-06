@@ -1,9 +1,17 @@
 import tkinter as tk
+from tkinter import filedialog
 
 import constants
 import ui_controller
 import ui_model
 import view
+
+
+def show_save_menu(controller: ui_controller.UiController):
+    chosen_path = filedialog.asksaveasfilename()
+    if chosen_path is not None:
+        print(f"Writing current puzzle to '{chosen_path}'")
+        controller.save_state_to_file(chosen_path)
 
 
 def main():
@@ -32,7 +40,8 @@ def main():
     # This will require a mechanism for resetting the colour and tube UIs to match the model.
     fileMenu.add_command(label="Open puzzle...")
     # TODO: Add functionality for saving puzzles.
-    fileMenu.add_command(label="Save puzzle as...")
+    fileMenu.add_command(
+        label="Save puzzle as...", command=lambda: show_save_menu(controller))
 
     window.mainloop()
 
