@@ -36,7 +36,7 @@ class ColourPicker(tk.Frame):
     def set_controller(self, controller: controller_interface.Controller):
         self._controller = controller
 
-    def _pick_colour(self, i, event):
+    def _pick_colour(self, i: int, event: tk.Event):
         _, hex_col = askcolor(color=self._frames[i]["background"])
         self._frames[i].configure(background=hex_col)
         self._update_colours()
@@ -45,13 +45,13 @@ class ColourPicker(tk.Frame):
         self._assert_has_controller()
         self._controller.update_colours([frame["background"] for frame in self._frames])
 
-    def _create_colour_picker_callback(self, i) -> Callable[[tk.Event], None]:
+    def _create_colour_picker_callback(self, i: int) -> Callable[[tk.Event], None]:
         return lambda event: self._pick_colour(i, event)
 
-    def _create_del_context_callback(self, i) -> Callable[[tk.Event], None]:
+    def _create_del_context_callback(self, i: int) -> Callable[[tk.Event], None]:
         return lambda event: self._show_delete_context_menu(i, event)
 
-    def _bind_events_for_frame_at_index(self, frame, index):
+    def _bind_events_for_frame_at_index(self, frame: tk.Frame, index: int):
         frame.bind("<Button-1>", self._create_colour_picker_callback(index))
         frame.bind("<Button-3>", self._create_del_context_callback(index))    
     
