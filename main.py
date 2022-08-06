@@ -24,6 +24,16 @@ def main():
     controller = ui_controller.UiController(model, main_window)
     main_window.set_controller(controller)
 
+    menu = tk.Menu(window)
+    window.config(menu=menu)
+    fileMenu = tk.Menu(menu, tearoff=False)
+    menu.add_cascade(label="File", menu=fileMenu)
+    # TODO: Add functionality for loading puzzles.
+    # This will require a mechanism for resetting the colour and tube UIs to match the model.
+    fileMenu.add_command(label="Open puzzle...")
+    # TODO: Add functionality for saving puzzles.
+    fileMenu.add_command(label="Save puzzle as...")
+
     window.mainloop()
 
 
