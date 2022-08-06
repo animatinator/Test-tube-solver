@@ -16,6 +16,18 @@ class TubeBoardView(tk.Frame):
         # This is set later by set_controller.
         self._controller = None
 
+        self._tubes_container = tk.Frame(self)
+        self._add_tube_button = tk.Button(
+            self, text="+", width=10, height=10,
+            command=lambda: self._add_tube(self._generate_empty_tube_state()))
+
+        self.columnconfigure(0, weight=1)
+        self.columnconfigure(1, weight=0)
+        self.rowconfigure(0, weight=1)
+
+        self._tubes_container.grid(row=0, column=0, sticky="nsew")
+        self._add_tube_button.grid(row=0, column=1, sticky="ew")
+
         self._tubes = []
 
         for tube in model.get_tube_board().tubes:
@@ -25,10 +37,14 @@ class TubeBoardView(tk.Frame):
         self._controller = controller
         for tube in self._tubes:
             tube.set_controller(self._controller)
+
+    def _generate_empty_tube_state(self) -> List[int]:
+        depth = self._model.get_tube_depth()
+        return [0] * depth
     
     def _add_tube(self, initial_state: List[int]):
         index = len(self._tubes)
-        tube = tube_view.TubeView(self, self._model, index, width=100, initial_state=initial_state)
+        tube = tube_view.TubeView(self._tubes_container, self._model, index, width=100, initial_state=initial_state)
         tube.set_controller(self._controller)
         self._tubes.append(tube)
         tube.pack(fill=tk.Y, side=tk.LEFT, expand=True, padx=20, pady=10)
