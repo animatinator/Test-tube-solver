@@ -3,7 +3,7 @@ import tkinter as tk
 import controller_interface
 import state
 import tube_view
-from typing import List
+from typing import Callable, List
 import ui_model
 
 
@@ -37,6 +37,12 @@ class TubeBoardView(tk.Frame):
         self._controller = controller
         for tube in self._tubes:
             tube.set_controller(self._controller)
+    
+    def _create_del_context_callback(self, index: int) -> Callable[[tk.Event], None]:
+        return lambda event: self._show_delete_context_menu(index, event)
+    
+    def _bind_events_for_tube_at_index(self, tube_frame: tk.Frame, index: int):
+        tube_frame.bind("<Button-3>", self._create_del_context_callback(index))
 
     def _generate_empty_tube_state(self) -> List[int]:
         depth = self._model.get_tube_depth()
@@ -48,6 +54,25 @@ class TubeBoardView(tk.Frame):
         tube.set_controller(self._controller)
         self._tubes.append(tube)
         tube.pack(fill=tk.Y, side=tk.LEFT, expand=True, padx=20, pady=10)
+
+        self._bind_events_for_tube_at_index(tube, index)
+    
+    def _rebind_tube_events(self):
+        for i, tube_frame in enumerate(self._tubes):
+            self._bind_events_for_tube_at_index(tube_frame, i)
+
+    def _delete_tube(self, index: int):
+        self._tubes[index].grid_forget()
+        self._tubes[index:] = self._tubes[index+1:]
+        self._rebind_tube_events()
+
+    def _show_delete_context_menu(index: int, event: tk.Event):
+        m = tk.Menu(self, tearoff=False)
+        m.add_command(label="Delete tube", command=lambda: self._delete_tube(index))
+        try:
+            m.tk_popup(event.x_root, event.y_root)
+        finally:
+            m.grab_release()
 
     def notify_colours_changed(self):
         for tube in self._tubes:
