@@ -42,9 +42,15 @@ class TubeView(tk.Frame):
     
     def set_controller(self, controller: controller_interface.Controller):
         self._controller = controller
+
+    def set_index(self, index: int):
+        self._index = index
     
-    def set_index(new_index: int):
-        self._index = new_index
+    def bind_context_menu_callback(self, callback: Callable[[tk.Event], None]):
+        # Bind a right-click event for all frames. Used to allow the owner of this object to add a
+        # context menu.
+        for frame in self._frames:
+            frame.bind("<Button-3>", callback)
 
     def notify_colours_changed(self):
         for index in range(len(self._state)):

@@ -41,8 +41,9 @@ class TubeBoardView(tk.Frame):
     def _create_del_context_callback(self, index: int) -> Callable[[tk.Event], None]:
         return lambda event: self._show_delete_context_menu(index, event)
     
-    def _bind_events_for_tube_at_index(self, tube_frame: tk.Frame, index: int):
-        tube_frame.bind("<Button-3>", self._create_del_context_callback(index))
+    def _bind_events_for_tube_at_index(self, tube_frame: tube_view.TubeView, index: int):
+        tube_frame.set_index(index)
+        tube_frame.bind_context_menu_callback(self._create_del_context_callback(index))
 
     def _generate_empty_tube_state(self) -> List[int]:
         depth = self._model.get_tube_depth()
@@ -62,11 +63,11 @@ class TubeBoardView(tk.Frame):
             self._bind_events_for_tube_at_index(tube_frame, i)
 
     def _delete_tube(self, index: int):
-        self._tubes[index].grid_forget()
+        self._tubes[index].pack_forget()
         self._tubes[index:] = self._tubes[index+1:]
         self._rebind_tube_events()
 
-    def _show_delete_context_menu(index: int, event: tk.Event):
+    def _show_delete_context_menu(self, index: int, event: tk.Event):
         m = tk.Menu(self, tearoff=False)
         m.add_command(label="Delete tube", command=lambda: self._delete_tube(index))
         try:
