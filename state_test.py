@@ -1,3 +1,4 @@
+import colour_mapping
 import constants
 import json
 import os
@@ -18,9 +19,11 @@ class TestState(unittest.TestCase):
 
     def test_serialisation(self):
         board = utils.create_empty_state()
+        colours = ["red", "blue", "green"]
         board.tubes[2].state[3] = 4
-        new_board = state.decode(state.encode(board))
-        self.assertEqual(board, new_board)
+        decoded_state = state.decode(state.encode(state.SavedPuzzle(board, colours)))
+        self.assertEqual(board, decoded_state.board)
+        self.assertEqual(colours, decoded_state.colours)
     
     def test_deserialisation_not_dict(self):
         with self.assertRaises(ValueError) as ve:
@@ -30,7 +33,7 @@ class TestState(unittest.TestCase):
     def test_deserialisation_bad_key(self):
         with self.assertRaises(ValueError) as ve:
             state.decode("{\"Test\": [1, 2, 3]}")
-        self.assertIn("whose first key is 'TubeBoard'", str(ve.exception))
+        self.assertIn("containing the key 'TubeBoard'", str(ve.exception))
     
     def test_deserialisation_bad_tubes_list(self):
         with self.assertRaises(ValueError) as ve:
@@ -46,6 +49,16 @@ class TestState(unittest.TestCase):
         with self.assertRaises(ValueError) as ve:
             state.decode("{\"TubeBoard\": [{\"TubeState\": 12345}]}")
         self.assertIn("must map to lists of integers", str(ve.exception))
+    
+    def test_deserialisation_no_colours(self):
+        with self.assertRaises(ValueError) as ve:
+            state.decode("{\"TubeBoard\": [{\"TubeState\": [1, 2, 3, 4]}]}")
+        self.assertIn("must contain the key 'Colours'", str(ve.exception))
+    
+    def test_deserialisation_colours_not_a_list(self):
+        with self.assertRaises(ValueError) as ve:
+            state.decode("{\"Colours\": \"red\", \"TubeBoard\": [{\"TubeState\": [1]}]}")
+        self.assertIn("'Colours' must map to a list of colours", str(ve.exception))
 
 
 class TestFileReadWrite(unittest.TestCase):
@@ -59,20 +72,24 @@ class TestFileReadWrite(unittest.TestCase):
         os.rmdir(_TEMPDIR)
 
     def test_load_empty_state(self):
-        loaded_board = state.load_from_file(_EMPTY_BOARD_PATH)
-        self.assertEqual(loaded_board, utils.create_empty_state())
+        loaded_puzzle = state.load_from_file(_EMPTY_BOARD_PATH)
+        self.assertEqual(loaded_puzzle.board, utils.create_empty_state())
     
     def test_write_then_read(self):
+        colours = ["red", "green", "blue"]
         board = utils.create_empty_state()
         board.tubes[2].state[3] = 4
 
         filepath = os.path.join(_TEMPDIR, "tmpfile.json")
-        state.write_to_file(board, filepath)
-        loaded_board = state.load_from_file(filepath)
 
-        self.assertEqual(loaded_board, board)
+        try:
+            state.write_to_file(state.SavedPuzzle(board, colours), filepath)
+            loaded_puzzle = state.load_from_file(filepath)
 
-        os.remove(filepath)
+            self.assertEqual(loaded_puzzle.board, board)
+            self.assertEqual(loaded_puzzle.colours, colours)
+        finally:
+            os.remove(filepath)
 
 if __name__ == '__main__':
     unittest.main()

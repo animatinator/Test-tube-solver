@@ -94,7 +94,7 @@ class GameBoardView():
                 tube_index += 1
 
 
-board = state.load_from_file(_BOARD_PATH)
+board = state.load_from_file(_BOARD_PATH).board
 board_view = GameBoardView(board)
 
 clock = pygame.time.Clock()
