@@ -39,7 +39,6 @@ def main():
     # TODO: Add functionality for loading puzzles.
     # This will require a mechanism for resetting the colour and tube UIs to match the model.
     fileMenu.add_command(label="Open puzzle...")
-    # TODO: Add functionality for saving puzzles.
     fileMenu.add_command(
         label="Save puzzle as...", command=lambda: show_save_menu(controller))
 
