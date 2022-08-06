@@ -9,7 +9,7 @@ import ui_model
 
 class TubeBoardView(tk.Frame):
     """Displays the range of editable test tubes."""
-    def __init__(self, parent, model: ui_model.UiModel, initial_tubes: state.TubeBoard):
+    def __init__(self, parent, model: ui_model.UiModel):
         super().__init__(parent)
 
         self._model = model
@@ -18,7 +18,7 @@ class TubeBoardView(tk.Frame):
 
         self._tubes = []
 
-        for tube in initial_tubes.tubes:
+        for tube in model.get_tube_board().tubes:
             self._add_tube(initial_state=tube.state)
     
     def set_controller(self, controller: controller_interface.Controller):

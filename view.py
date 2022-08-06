@@ -18,7 +18,7 @@ class MainWindow(tk.Frame):
         self._colour_picker = colour_picker.ColourPicker(self, model.get_colours())
         self._colour_picker.grid(row=0, column=0, sticky="nsew")
         
-        self._board_view = board_view.TubeBoardView(self, model, model.get_tube_board())
+        self._board_view = board_view.TubeBoardView(self, model)
         self._board_view.grid(row=1, column=0, sticky="nsew")
     
     def set_controller(self, controller: controller_interface.Controller):
