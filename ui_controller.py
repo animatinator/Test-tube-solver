@@ -20,3 +20,9 @@ class UiController(controller_interface.Controller):
     
     def update_tube_state(self, index: int, state: List[int]):
         self._model.update_tube_state(index, state)
+    
+    def add_tube(self, initial_state: List[int]):
+        self._model.add_tube(initial_state=initial_state)
+    
+    def delete_tube(self, index: int):
+        self._model.delete_tube(index)

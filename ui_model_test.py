@@ -27,6 +27,17 @@ class BoardStateTest(unittest.TestCase):
         self.assertEqual(
             model.get_tube_board().tubes[1].state,
             [0, 0, 0, 0])
+    
+    def test_add_tube_with_initial_state(self):
+        model = ui_model.UiModel(initial_colours=[])
+        self.assertEqual(len(model.get_tube_board().tubes), 1)
+
+        model.add_tube(initial_state=[1, 2, 3, 4, 5])
+
+        self.assertEqual(len(model.get_tube_board().tubes), 2)
+        self.assertEqual(
+            model.get_tube_board().tubes[1].state,
+            [1, 2, 3, 4, 5])
 
     def test_update_state(self):
         model = ui_model.UiModel(initial_colours=[])

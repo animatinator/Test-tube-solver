@@ -31,7 +31,9 @@ class TubeBoardView(tk.Frame):
         self._tubes = []
 
         for tube in model.get_tube_board().tubes:
-            self._add_tube(initial_state=tube.state)
+            # Add each tube without trying to update the controller (we don't have a controller
+            # yet).
+            self._add_tube(initial_state=tube.state, update_controller=False)
     
     def set_controller(self, controller: controller_interface.Controller):
         self._controller = controller
@@ -49,7 +51,15 @@ class TubeBoardView(tk.Frame):
         depth = self._model.get_tube_depth()
         return [0] * depth
     
-    def _add_tube(self, initial_state: List[int]):
+    def _notify_add_tube(self, initial_state: List[int]):
+        self._assert_has_controller()
+        self._controller.add_tube(initial_state)
+    
+    def _notify_delete_tube(self, index: int):
+        self._assert_has_controller()
+        self._controller.delete_tube(index)
+    
+    def _add_tube(self, initial_state: List[int], update_controller: bool=True):
         index = len(self._tubes)
         tube = tube_view.TubeView(self._tubes_container, self._model, index, width=100, initial_state=initial_state)
         tube.set_controller(self._controller)
@@ -57,6 +67,11 @@ class TubeBoardView(tk.Frame):
         tube.pack(fill=tk.Y, side=tk.LEFT, expand=True, padx=20, pady=10)
 
         self._bind_events_for_tube_at_index(tube, index)
+
+        # Updating the controller is optional because we won't yet have a controller when this
+        # method is first called (during construction).
+        if update_controller:
+            self._notify_add_tube(initial_state)
     
     def _rebind_tube_events(self):
         for i, tube_frame in enumerate(self._tubes):
@@ -66,6 +81,8 @@ class TubeBoardView(tk.Frame):
         self._tubes[index].pack_forget()
         self._tubes[index:] = self._tubes[index+1:]
         self._rebind_tube_events()
+        
+        self._notify_delete_tube(index)
 
     def _show_delete_context_menu(self, index: int, event: tk.Event):
         m = tk.Menu(self, tearoff=False)
