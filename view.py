@@ -13,6 +13,7 @@ class MainWindow(tk.Frame):
 
         self.rowconfigure(0, weight=1)
         self.rowconfigure(1, weight=10)
+        self.rowconfigure(2, weight=1)
         self.columnconfigure(0, weight=1)
 
         self._colour_picker = colour_picker.ColourPicker(self, model.get_colours())
@@ -20,8 +21,15 @@ class MainWindow(tk.Frame):
         
         self._board_view = board_view.TubeBoardView(self, model)
         self._board_view.grid(row=1, column=0, sticky="nsew")
+
+        self._controller = None
+
+        self._solve_button = tk.Button(
+            self, text="Solve!", background="green", command=lambda: self._controller.run_solver())
+        self._solve_button.grid(row=2, column=0, sticky="nsew")
     
     def set_controller(self, controller: controller_interface.Controller):
+        self._controller = controller
         self._colour_picker.set_controller(controller)
         self._board_view.set_controller(controller)
     
