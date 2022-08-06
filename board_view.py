@@ -16,7 +16,34 @@ class TubeBoardView(tk.Frame):
         # This is set later by set_controller.
         self._controller = None
 
-        self._tubes_container = tk.Frame(self)
+        # The canvas will display the board state and the scroll bar will be for scrolling
+        # horizontally.
+        self._scrollable_canvas = tk.Canvas(self)
+        self._scrollbar = tk.Scrollbar(
+            self, orient=tk.HORIZONTAL, command=self._scrollable_canvas.xview)
+        self._scrollable_canvas.configure(xscrollcommand=self._scrollbar.set)
+
+        def update_canvas_scroll_region(event):
+            # Update the canvas's scroll region in response to changes in the tube container's
+            # size.
+            self._scrollable_canvas.configure(
+                scrollregion=self._scrollable_canvas.bbox(tk.ALL))
+
+        self._tubes_container = tk.Frame(self._scrollable_canvas)
+        # Update the canvas scroll region when the size changes.
+        self._tubes_container.bind("<Configure>", update_canvas_scroll_region)
+
+        # Add the tube container to the scrollable canvas.
+        container_ref = self._scrollable_canvas.create_window(
+            (0, 0), window=self._tubes_container, anchor=tk.NW)
+
+        def update_tube_container_height_to_match_canvas(event):
+            self._scrollable_canvas.itemconfig(container_ref, height=event.height)
+
+        # Keep the test tubes scaled to fill the canvas.
+        self._scrollable_canvas.bind(
+            "<Configure>", update_tube_container_height_to_match_canvas)
+
         self._add_tube_button = tk.Button(
             self, text="+", width=10, height=10,
             command=lambda: self._add_tube(self._generate_empty_tube_state()))
@@ -24,8 +51,10 @@ class TubeBoardView(tk.Frame):
         self.columnconfigure(0, weight=1)
         self.columnconfigure(1, weight=0)
         self.rowconfigure(0, weight=1)
+        self.rowconfigure(1, weight=0)
 
-        self._tubes_container.grid(row=0, column=0, sticky="nsew")
+        self._scrollable_canvas.grid(row=0, column=0, sticky="nsew")
+        self._scrollbar.grid(row=1, column=0, sticky="nsew")
         self._add_tube_button.grid(row=0, column=1, sticky="ew")
 
         self._tubes = []
