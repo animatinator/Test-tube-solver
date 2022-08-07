@@ -59,15 +59,22 @@ class TubeBoardView(tk.Frame):
 
         self._tubes = []
 
-        for tube in model.get_tube_board().tubes:
-            # Add each tube without trying to update the controller (we don't have a controller
-            # yet).
-            self._add_tube(initial_state=tube.state, update_controller=False)
+        self.reset_to_match_model()
     
     def set_controller(self, controller: controller_interface.Controller):
         self._controller = controller
         for tube in self._tubes:
             tube.set_controller(self._controller)
+    
+    def reset_to_match_model(self):
+        # Clear all existing colours by repeatedly deleting index zero.
+        for _ in range(len(self._tubes)):
+            # Don't update the controller or we'll change the model.
+            self._delete_tube(0, update_controller=False)
+
+        for tube in self._model.get_tube_board().tubes:
+            # Add each tube without trying to update the controller (which would change the model).
+            self._add_tube(initial_state=tube.state, update_controller=False)
     
     def _create_del_context_callback(self, index: int) -> Callable[[tk.Event], None]:
         return lambda event: self._show_delete_context_menu(index, event)
@@ -106,12 +113,15 @@ class TubeBoardView(tk.Frame):
         for i, tube_frame in enumerate(self._tubes):
             self._bind_events_for_tube_at_index(tube_frame, i)
 
-    def _delete_tube(self, index: int):
+    def _delete_tube(self, index: int, update_controller: bool=True):
         self._tubes[index].pack_forget()
         self._tubes[index:] = self._tubes[index+1:]
         self._rebind_tube_events()
-        
-        self._notify_delete_tube(index)
+       
+        # Updating the controller is optional because we may need to delete colours in response to
+        # the controller and won't want to send events back in that case.
+        if update_controller:
+            self._notify_delete_tube(index)
 
     def _show_delete_context_menu(self, index: int, event: tk.Event):
         m = tk.Menu(self, tearoff=False)

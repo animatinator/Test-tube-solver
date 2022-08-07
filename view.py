@@ -38,4 +38,4 @@ class MainWindow(tk.Frame):
     
     def reset_to_match_model(self):
         self._colour_picker.reset_to_match_model()
-        # TODO: Also reset the board view.
+        self._board_view.reset_to_match_model()

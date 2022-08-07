@@ -38,7 +38,7 @@ class ColourPicker(tk.Frame):
 
     def reset_to_match_model(self):
         # Clear all existing colours by repeatedly deleting index zero.
-        for index in range(len(self._colour_frames)):
+        for _ in range(len(self._colour_frames)):
             # Don't update the controller or we'll change the model.
             self._delete_colour(0, update_controller=False)
 
