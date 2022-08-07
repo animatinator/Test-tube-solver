@@ -35,3 +35,7 @@ class MainWindow(tk.Frame):
     
     def notify_colours_changed(self):
         self._board_view.notify_colours_changed()
+    
+    def reset_to_match_model(self):
+        self._colour_picker.reset_to_match_model()
+        # TODO: Also reset the board view.

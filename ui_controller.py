@@ -40,7 +40,9 @@ class UiController(controller_interface.Controller):
     
     def load_state_from_file(self, filepath: str):
         loaded_puzzle = state.load_from_file(filepath)
-        print(f"TODO state to be loaded: {loaded_puzzle}")
+        self._model.update_colours(loaded_puzzle.colours)
+        self._model.update_tube_board(loaded_puzzle.board)
+        self._view.reset_to_match_model()
 
     def run_solver(self):
         puzzle = self._model.get_tube_board()

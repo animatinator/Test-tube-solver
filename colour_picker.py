@@ -31,11 +31,20 @@ class ColourPicker(tk.Frame):
 
         self._colour_frames = []
 
-        for colour in model.get_colours():
-            self._add_colour(colour, update_controller=False)
+        self.reset_to_match_model()
     
     def set_controller(self, controller: controller_interface.Controller):
         self._controller = controller
+
+    def reset_to_match_model(self):
+        # Clear all existing colours by repeatedly deleting index zero.
+        for index in range(len(self._colour_frames)):
+            # Don't update the controller or we'll change the model.
+            self._delete_colour(0, update_controller=False)
+
+        # Now add the colours from the model.
+        for colour in self._model.get_colours():
+            self._add_colour(colour, update_controller=False)
 
     def _pick_colour(self, i: int, event: tk.Event):
         _, hex_col = askcolor(color=self._colour_frames[i]["background"])
@@ -73,11 +82,15 @@ class ColourPicker(tk.Frame):
         for index, frame in enumerate(self._colour_frames):
             self._bind_events_for_frame_at_index(frame, index)
     
-    def _delete_colour(self, index: int):
+    def _delete_colour(self, index: int, update_controller: bool = True):
         self._colour_frames[index].pack_forget()
         self._colour_frames[index:] = self._colour_frames[index + 1:]
         self._rebind_frame_events()
-        self._update_colours()
+
+        # Updating the controller is optional because we may need to delete colours in response to
+        # the controller and won't want to send events back in that case.
+        if update_controller:
+            self._update_colours()
     
     def _show_delete_context_menu(self, index: int, event: tk.Event):
         m = tk.Menu(self, tearoff=False)

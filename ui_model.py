@@ -33,6 +33,9 @@ class UiModel:
     
     def get_tube_board(self) -> state.TubeBoard:
         return self._board
+    
+    def update_tube_board(self, new_board: state.TubeBoard):
+        self._board = new_board
 
     def update_tube_state(self, index: int, state: List[int]):
         self._board.tubes[index].state = state
