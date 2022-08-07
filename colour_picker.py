@@ -15,17 +15,17 @@ class ColourPicker(tk.Frame):
     def __init__(self, parent, initial_colours: List[str]):
         super().__init__(parent, background="pink")
 
-        self._frames_container = tk.Frame(self)
+        self._colour_frames_container = tk.Frame(self)
         self._add_colour_button = tk.Button(self, text="+", command=self._add_colour)
 
         self.columnconfigure(0, weight=1)
         self.columnconfigure(1, weight=0)
         self.rowconfigure(0, weight=1)
 
-        self._frames_container.grid(row=0, column=0, sticky="nsew")
+        self._colour_frames_container.grid(row=0, column=0, sticky="nsew")
         self._add_colour_button.grid(row=0, column=1, sticky="nsew")
 
-        self._frames = []
+        self._colour_frames = []
 
         for colour in initial_colours:
             self._add_colour(colour, update_controller=False)
@@ -37,13 +37,13 @@ class ColourPicker(tk.Frame):
         self._controller = controller
 
     def _pick_colour(self, i: int, event: tk.Event):
-        _, hex_col = askcolor(color=self._frames[i]["background"])
-        self._frames[i].configure(background=hex_col)
+        _, hex_col = askcolor(color=self._colour_frames[i]["background"])
+        self._colour_frames[i].configure(background=hex_col)
         self._update_colours()
     
     def _update_colours(self):
         self._assert_has_controller()
-        self._controller.update_colours([frame["background"] for frame in self._frames])
+        self._controller.update_colours([frame["background"] for frame in self._colour_frames])
 
     def _create_colour_picker_callback(self, i: int) -> Callable[[tk.Event], None]:
         return lambda event: self._pick_colour(i, event)
@@ -56,9 +56,9 @@ class ColourPicker(tk.Frame):
         frame.bind("<Button-3>", self._create_del_context_callback(index))    
     
     def _add_colour(self, initial_colour: str="white", update_controller: bool=True):
-        index = len(self._frames)
-        frame = tk.Frame(self._frames_container, background=initial_colour)
-        self._frames.append(frame)
+        index = len(self._colour_frames)
+        frame = tk.Frame(self._colour_frames_container, background=initial_colour)
+        self._colour_frames.append(frame)
         frame.pack(fill=tk.BOTH, side=tk.LEFT, expand=True)
 
         self._bind_events_for_frame_at_index(frame, index)
@@ -69,12 +69,12 @@ class ColourPicker(tk.Frame):
             self._update_colours()
 
     def _rebind_frame_events(self):
-        for index, frame in enumerate(self._frames):
+        for index, frame in enumerate(self._colour_frames):
             self._bind_events_for_frame_at_index(frame, index)
     
     def _delete_colour(self, index: int):
-        self._frames[index].pack_forget()
-        self._frames[index:] = self._frames[index + 1:]
+        self._colour_frames[index].pack_forget()
+        self._colour_frames[index:] = self._colour_frames[index + 1:]
         self._rebind_frame_events()
         self._update_colours()
     
