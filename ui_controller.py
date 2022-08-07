@@ -37,6 +37,10 @@ class UiController(controller_interface.Controller):
             state.SavedPuzzle(
                 self._model.get_tube_board(), self._model.get_colours()),
             filepath)
+    
+    def load_state_from_file(self, filepath: str):
+        loaded_puzzle = state.load_from_file(filepath)
+        print(f"TODO state to be loaded: {loaded_puzzle}")
 
     def run_solver(self):
         puzzle = self._model.get_tube_board()

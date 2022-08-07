@@ -14,6 +14,13 @@ def show_save_menu(controller: ui_controller.UiController):
         controller.save_state_to_file(chosen_path)
 
 
+def show_load_menu(controller: ui_controller.UiController):
+    chosen_path = filedialog.askopenfilename()
+    if chosen_path is not None:
+        print(f"Loading puzzle from '{chosen_path}'")
+        controller.load_state_from_file(chosen_path)
+
+
 def main():
     window = tk.Tk()
     window.title('Test tube solver 3000')
@@ -36,9 +43,7 @@ def main():
     window.config(menu=menu)
     fileMenu = tk.Menu(menu, tearoff=False)
     menu.add_cascade(label="File", menu=fileMenu)
-    # TODO: Add functionality for loading puzzles.
-    # This will require a mechanism for resetting the colour and tube UIs to match the model.
-    fileMenu.add_command(label="Open puzzle...")
+    fileMenu.add_command(label="Open puzzle...", command=lambda: show_load_menu(controller))
     fileMenu.add_command(
         label="Save puzzle as...", command=lambda: show_save_menu(controller))
 
