@@ -1,1 +1,68 @@
-{"Colours": ["#ff95ff", "#9cd64e", "#654343", "#34029d", "#62cbdd", "#1128ff"], "TubeBoard": [{"TubeState": [1, 2, 1, 1]}, {"TubeState": [0, 0, 0, 3]}, {"TubeState": [3, 4, 5, 5]}, {"TubeState": [0, 2, 4, 4]}, {"TubeState": [3, 2, 6, 6]}, {"TubeState": [3, 6, 6, 2]}, {"TubeState": [4, 1, 5, 5]}]}
+{
+    "Colours": [
+        "#ff95ff",
+        "#9cd64e",
+        "#654343",
+        "#34029d",
+        "#62cbdd",
+        "#1128ff"
+    ],
+    "TubeBoard": [
+        {
+            "TubeState": [
+                1,
+                2,
+                1,
+                1
+            ]
+        },
+        {
+            "TubeState": [
+                0,
+                0,
+                0,
+                3
+            ]
+        },
+        {
+            "TubeState": [
+                3,
+                4,
+                5,
+                5
+            ]
+        },
+        {
+            "TubeState": [
+                0,
+                2,
+                4,
+                4
+            ]
+        },
+        {
+            "TubeState": [
+                3,
+                2,
+                6,
+                6
+            ]
+        },
+        {
+            "TubeState": [
+                3,
+                6,
+                6,
+                2
+            ]
+        },
+        {
+            "TubeState": [
+                4,
+                1,
+                5,
+                5
+            ]
+        }
+    ]
+}
