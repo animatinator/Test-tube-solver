@@ -9,7 +9,7 @@ _TUBE_STATE_KEY = "TubeState"
 _TUBE_BOARD_KEY = "TubeBoard"
 _COLOURS_KEY = "Colours"
 
-@dataclasses.dataclass
+@dataclasses.dataclass(eq=True)
 class TubeState:
     """Represents the state of one tube on the board."""
     # Each distinct integer value represents a different colour.
@@ -17,10 +17,16 @@ class TubeState:
     # Zero indicates that the space is empty.
     state: List[int]
 
-@dataclasses.dataclass
+    def __hash__(self):
+        return hash(tuple(self.state))
+
+@dataclasses.dataclass(eq=True)
 class TubeBoard:
     """Represents the full game board."""
     tubes: List[TubeState]
+
+    def __hash__(self):
+        return hash(tuple(self.tubes))
 
 
 @dataclasses.dataclass
