@@ -16,7 +16,7 @@ class MainWindow(tk.Frame):
         self.rowconfigure(2, weight=1)
         self.columnconfigure(0, weight=1)
 
-        self._colour_picker = colour_picker.ColourPicker(self, model.get_colours())
+        self._colour_picker = colour_picker.ColourPicker(self, model)
         self._colour_picker.grid(row=0, column=0, sticky="nsew")
         
         self._board_view = board_view.TubeBoardView(self, model)

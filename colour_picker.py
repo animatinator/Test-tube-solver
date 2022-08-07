@@ -12,8 +12,12 @@ class ColourPicker(tk.Frame):
     
     These are used to define the selection of colours used.
     """
-    def __init__(self, parent, initial_colours: List[str]):
+    def __init__(self, parent, model: ui_model.UiModel):
         super().__init__(parent, background="pink")
+
+        self._model = model
+        # The controller will be set by a later call to set_controller.
+        self._controller = None
 
         self._colour_frames_container = tk.Frame(self)
         self._add_colour_button = tk.Button(self, text="+", command=self._add_colour)
@@ -27,11 +31,8 @@ class ColourPicker(tk.Frame):
 
         self._colour_frames = []
 
-        for colour in initial_colours:
+        for colour in model.get_colours():
             self._add_colour(colour, update_controller=False)
-        
-        # The controller will be set by a later call to set_controller.
-        self._controller = None
     
     def set_controller(self, controller: controller_interface.Controller):
         self._controller = controller
