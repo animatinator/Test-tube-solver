@@ -14,10 +14,11 @@ def _solve(
         board: state.TubeBoard,
         moves_made: List[moves.Move],
         seen: frozenset) -> List[moves.Move]:
-    if board in seen:
+    board_canonical = state.get_canonical_sorted_form(board)
+    if board_canonical in seen:
         return None
     
-    new_seen = seen.union(frozenset([board]))
+    new_seen = seen.union(frozenset([board_canonical]))
 
     if is_solved(board):
         return moves_made
