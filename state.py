@@ -99,3 +99,8 @@ def load_from_file(filepath: str) -> SavedPuzzle:
     with open(filepath, "r") as infile:
         content = "".join(infile.readlines())
         return decode(content)
+
+def get_canonical_sorted_form(board: TubeBoard) -> TubeBoard:
+    return TubeBoard(tubes=sorted(
+        board.tubes,
+        key=lambda tube: ''.join(str(elem) for elem in tube.state)))

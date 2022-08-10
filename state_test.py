@@ -91,5 +91,21 @@ class TestFileReadWrite(unittest.TestCase):
         finally:
             os.remove(filepath)
 
+
+class TestCanonicalSortedForm(unittest.TestCase):
+    def test_sorted(self):
+        board = state.TubeBoard(tubes=[
+            state.TubeState(state=[1, 2, 3, 4]),
+            state.TubeState(state=[0, 2, 2, 3]),
+            state.TubeState(state=[0, 1, 2, 3]),
+        ])
+        expected = state.TubeBoard(tubes=[
+            state.TubeState(state=[0, 1, 2, 3]),
+            state.TubeState(state=[0, 2, 2, 3]),
+            state.TubeState(state=[1, 2, 3, 4]),
+        ])
+
+        self.assertEqual(expected, state.get_canonical_sorted_form(board))
+
 if __name__ == '__main__':
     unittest.main()
