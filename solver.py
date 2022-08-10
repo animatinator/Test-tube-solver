@@ -30,5 +30,29 @@ def _solve(
     
     return None
 
+# TODO: This is unworkably slow. The branch factor is surprisingly high (mainly caused by empty
+# tubes; likely wouldn't be so bad without them), and it takes over a minute to get to depth 8/9.
+# Proposal: maybe most of the inefficiency of the DFS solution is caused by pointlessly moving
+# between empties? Even filtering repeat states, there's still a lot of scope for moving things
+# around, especially in larger puzzles.
+def _solve_bfs(board: state.TubeBoard) -> List[moves.Move]:
+    queue = [(board, [])]
+
+    while len(queue):
+        front_board, moves_made = queue.pop(0)
+
+        if is_solved(front_board):
+            return moves_made
+    
+        possible = moves.get_possible_moves(front_board)
+        print(f"Branch {len(possible)}")
+        for move in possible:
+            print(len(moves_made + [move]))
+            new_board = moves.apply_move(front_board, move)
+            queue.append((new_board, moves_made + [move]))
+    
+    return None
+
 def solve(board: state.TubeBoard):
     return _solve(board, [], frozenset())
+    # return _solve_bfs(board)
