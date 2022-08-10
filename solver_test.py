@@ -63,6 +63,18 @@ class SolverTest(unittest.TestCase):
         self.assertIsNotNone(solution)
         self.assertEqual(len(solution), 10)
 
+    def test_doesnt_get_distracted_by_unnecessary_empty_moves(self):
+        board = state.TubeBoard(tubes=[
+            state.TubeState(state=[0, 0, 2, 2]),
+            state.TubeState(state=[0, 0, 3, 3]),
+            state.TubeState(state=[0, 0, 0, 0]),
+            state.TubeState(state=[1, 1, 2, 2]),
+            state.TubeState(state=[1, 1, 3, 3])
+        ])
+        solution = solver.solve(board)
+        self.assertIsNotNone(solution)
+        self.assertEqual(len(solution), 4) # 9 before sorted canonical states
+
     def test_improvement_with_canonical_sorted_state(self):
         board = state.TubeBoard(tubes=[
             state.TubeState(state=[1, 2, 3, 4]),
