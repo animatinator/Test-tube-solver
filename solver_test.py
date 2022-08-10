@@ -63,6 +63,20 @@ class SolverTest(unittest.TestCase):
         self.assertIsNotNone(solution)
         self.assertEqual(len(solution), 10)
 
+    def test_improvement_with_canonical_sorted_state(self):
+        board = state.TubeBoard(tubes=[
+            state.TubeState(state=[1, 2, 3, 4]),
+            state.TubeState(state=[1, 2, 4, 3]),
+            state.TubeState(state=[5, 3, 5, 1]),
+            state.TubeState(state=[2, 5, 1, 3]),
+            state.TubeState(state=[2, 5, 4, 4]),
+            state.TubeState(state=[0, 0, 0, 0]),
+            state.TubeState(state=[0, 0, 0, 0])
+        ])
+        solution = solver.solve(board)
+        self.assertIsNotNone(solution)
+        self.assertEqual(len(solution), 18)  # Previously 23
+
 
 if __name__ == '__main__':
     unittest.main()
