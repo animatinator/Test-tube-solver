@@ -1,7 +1,12 @@
 import moves
+import os
 import state
 import unittest
 import utils
+
+
+_TEMPDIR = "solutions/test_data"
+_EMPTY_SOLUTION_PATH = "solutions/empty.json"
 
 
 class TestTopOfTubeInfo(unittest.TestCase):
@@ -166,6 +171,70 @@ class TestApplyMove(unittest.TestCase):
         ])
         moves.apply_move(board, moves.Move(1, 0))
         self.assertEqual(want_original_board, board)
+
+
+class TestSerialisation(unittest.TestCase):
+    def test_empty_serialisation(self):
+        solution = []
+        self.assertEqual("{\"Solution\": []}", moves.encode_solution(solution))
+    
+    def test_serialisation(self):
+        solution = [moves.Move(1, 2), moves.Move(2, 1)]
+        decoded_solution = moves.decode_solution(moves.encode_solution(solution))
+        self.assertEqual(decoded_solution, solution)
+    
+    def test_serialisation_not_dict(self):
+        with self.assertRaises(ValueError) as ve:
+            moves.decode_solution("[1, 2, 3]")
+        self.assertIn("must be a dictionary", str(ve.exception))
+    
+    def test_serialisation_bad_key(self):
+        with self.assertRaises(ValueError) as ve:
+            moves.decode_solution("{\"Test\": [1, 2, 3]}")
+        self.assertIn("containing the key 'Solution'", str(ve.exception))
+    
+    def test_serialisation_bad_moves_list(self):
+        with self.assertRaises(ValueError) as ve:
+            moves.decode_solution("{\"Solution\": 24601}")
+        self.assertIn("must map to a list of moves", str(ve.exception))
+    
+    def test_serialisation_bad_move_in_list(self):
+        with self.assertRaises(ValueError) as ve:
+            moves.decode_solution("{\"Solution\": [[1, 2], [3, 4], 12345]}")
+        self.assertIn("must be (int, int) pairs.", str(ve.exception))
+    
+    def test_serialisation_wrong_length_move_in_list(self):
+        with self.assertRaises(ValueError) as ve:
+            moves.decode_solution("{\"Solution\": [[1, 2], [3, 4], [5, 6, 7]]}")
+        self.assertIn("must be (int, int) pairs.", str(ve.exception))
+
+
+class TestFileReadWrite(unittest.TestCase):
+
+    @classmethod
+    def setUpClass(cls):
+        os.mkdir(_TEMPDIR)
+
+    @classmethod
+    def tearDownClass(cls):
+        os.rmdir(_TEMPDIR)
+
+    def test_load_empty_solution(self):
+        loaded_solution = moves.load_solution_from_file(_EMPTY_SOLUTION_PATH)
+        self.assertEqual(loaded_solution, [])
+    
+    def test_write_then_read(self):
+        solution = [moves.Move(1, 2), moves.Move(3, 4)]
+
+        filepath = os.path.join(_TEMPDIR, "tmpfile.json")
+
+        try:
+            moves.write_solution_to_file(solution, filepath)
+            loaded_solution = moves.load_solution_from_file(filepath)
+
+            self.assertEqual(loaded_solution, solution)
+        finally:
+            os.remove(filepath)
 
 
 if __name__ == '__main__':

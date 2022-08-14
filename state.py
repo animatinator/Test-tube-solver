@@ -63,7 +63,7 @@ def decode(json_str: str) -> SavedPuzzle:
         if not (type(tube) is dict and _TUBE_STATE_KEY in tube):
             raise ValueError(f"Could not decode JSON string '{json_str}': " +
             f"it contains an invalid tube definition '{tube}'. Tube definitions " +
-            f"must be dictionary with the key '{_TUBE_STATE_KEY}'")
+            f"must be dictionaries with the key '{_TUBE_STATE_KEY}'")
         values = tube[_TUBE_STATE_KEY]
         if type(values) is not list:
             raise ValueError(f"Could not decode JSON string '{json_str}': " +

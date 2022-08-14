@@ -1,4 +1,3 @@
-import colour_mapping
 import constants
 from random import randrange
 import state
