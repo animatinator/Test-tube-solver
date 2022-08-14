@@ -1,9 +1,8 @@
 import argparse
-import colour_mapping
 import constants
 import pygame
 import state
-from typing import Tuple
+from typing import List, Tuple
 
 _BG_COLOUR = (0, 0, 0)
 
@@ -19,8 +18,9 @@ _STARTING_SIZE = (500, 400)
 
 
 class GameBoardView():
-    def __init__(self, board: state.TubeBoard):
+    def __init__(self, board: state.TubeBoard, colours: List[str]):
         self._board = board
+        self._colours = colours
 
         self._tubes_per_row: int = int((len(board.tubes) + _NUM_ROWS - 1) / _NUM_ROWS)
         self._tube_depth: int = len(board.tubes[0].state)
@@ -39,7 +39,8 @@ class GameBoardView():
         element_size = size[1] / len(tube_state.state)
         for i, element in enumerate(tube_state.state):
             ypos = position[1] + i * element_size
-            colour = colour_mapping.map_colour(element)
+            colour = 'black' if element == 0 else self._colours[element - 1]
+            colour = pygame.Color(colour)
             pygame.draw.rect(
                 surface, colour,
                 pygame.Rect(position[0], ypos, size[0], element_size))
@@ -100,10 +101,11 @@ class BoardDisplayApp:
 
     This sets up Pygame, handles events and delegates to the GameBoardView for drawing.
     """
-    def __init__(self, board: state.TubeBoard, size: Tuple[int, int]):
+    def __init__(self, board: state.TubeBoard, colours: List[str], size: Tuple[int, int]):
         self._board = board
+        self._colours = colours
         self._size = size
-        self._board_view = GameBoardView(board)
+        self._board_view = GameBoardView(board, colours)
         self._clock = pygame.time.Clock()
 
     def run(self):
@@ -138,6 +140,6 @@ if __name__ == '__main__':
         help='The path to the board to display')
     args = parser.parse_args()
 
-    board = state.load_from_file(args.board_path).board
-    app = BoardDisplayApp(board, size=_STARTING_SIZE)
+    loaded_state = state.load_from_file(args.board_path)
+    app = BoardDisplayApp(loaded_state.board, loaded_state.colours, size=_STARTING_SIZE)
     app.run()
