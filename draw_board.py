@@ -4,10 +4,6 @@ import pygame
 import state
 from typing import Tuple
 
-
-# TODO: Make dynamically configurable.
-_BOARD_PATH = "boards/random.json"
-
 _BG_COLOUR = (0, 0, 0)
 
 # Horizontal and vertical spacing as fractions of the tube width and height.
@@ -18,11 +14,7 @@ _BOARD_PADDING_RATIO_TO_SIZE = 0.2
 
 _NUM_ROWS = constants.NUM_ROWS
 
-size = (500, 400)
-
-pygame.init()
-surface = pygame.display.set_mode(size, pygame.RESIZABLE)
-pygame.display.set_caption("Test tube solver: board view")
+_STARTING_SIZE = (500, 400)
 
 
 class GameBoardView():
@@ -52,6 +44,7 @@ class GameBoardView():
                 pygame.Rect(position[0], ypos, size[0], element_size))
     
     def _compute_board_rect(self, screen_dims: Tuple[int, int]) -> Tuple[Tuple[int, int], Tuple[int, int]]:
+        """Returns ((width, height), (left, top))."""
         aspect_ratio = screen_dims[0] / screen_dims[1]
 
         # Relative horizontal and vertical once we include padding.
@@ -76,7 +69,7 @@ class GameBoardView():
         return ((width, height), topleft)
 
     def draw(self, surface: pygame.Surface):
-        ((width, height), topleft) = self._compute_board_rect(size)
+        ((width, height), topleft) = self._compute_board_rect((surface.get_width(), surface.get_height()))
 
         # RELATIVE_WIDTH is in units of test tube width.
         tube_width = width / self._relative_width
@@ -101,26 +94,45 @@ class GameBoardView():
                 tube_index += 1
 
 
-board = state.load_from_file(_BOARD_PATH).board
-board_view = GameBoardView(board)
+class BoardDisplayApp:
+    """Controls the application's main loop.
 
-clock = pygame.time.Clock()
+    This sets up Pygame, handles events and delegates to the GameBoardView for drawing.
+    """
+    def __init__(self, board: state.TubeBoard, size: Tuple[int, int]):
+        self._board = board
+        self._size = size
+        self._board_view = GameBoardView(board)
+        self._clock = pygame.time.Clock()
 
-running = True
+    def run(self):
+        pygame.init()
+        surface = pygame.display.set_mode(self._size, pygame.RESIZABLE)
+        pygame.display.set_caption("Test tube solver: board view")
 
-while running:
-    surface.fill(_BG_COLOUR)
+        running = True
 
-    board_view.draw(surface)
+        while running:
+            surface.fill(_BG_COLOUR)
 
-    pygame.display.update()
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            running = False
-        if event.type == pygame.VIDEORESIZE:
-            size = (event.w, event.h)
-            surface = pygame.display.set_mode(size, pygame.RESIZABLE)
+            self._board_view.draw(surface)
 
-    clock.tick(10)
+            pygame.display.update()
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    running = False
+                if event.type == pygame.VIDEORESIZE:
+                    self._size = (event.w, event.h)
+                    surface = pygame.display.set_mode(self._size, pygame.RESIZABLE)
 
-pygame.quit()
+            self._clock.tick(10)
+
+        pygame.quit()
+
+
+if __name__ == '__main__':
+    # TODO: Make dynamically configurable.
+    board_path = "boards/random.json"
+    board = state.load_from_file(board_path).board
+    app = BoardDisplayApp(board, size=_STARTING_SIZE)
+    app.run()
