@@ -16,10 +16,7 @@ _TUBE_VSPACING_TO_HEIGHT: float = 0.3
 # The ratio of padding around the board to the size of the board
 _BOARD_PADDING_RATIO_TO_SIZE = 0.2
 
-# Tube height:width ratio. Just the depth of the tube, so that each element in the tube is square.
-_TUBE_HEIGHT_TO_WIDTH: int = constants.TUBE_DEPTH
 _NUM_ROWS = constants.NUM_ROWS
-_TUBES_PER_ROW: int = int((constants.NUM_TUBES + _NUM_ROWS - 1) / _NUM_ROWS)
 
 size = (500, 400)
 
@@ -32,11 +29,14 @@ class GameBoardView():
     def __init__(self, board: state.TubeBoard):
         self._board = board
 
+        self._tubes_per_row: int = int((len(board.tubes) + _NUM_ROWS - 1) / _NUM_ROWS)
+        self._tube_depth: int = len(board.tubes[0].state)
+
         # Calculate the relative width and height of the board.
         # Units are effectively tube widths.
         # e.g. width is num tubes + (num padding * padding as fraction of tube width)
-        self._relative_width: float = float(_TUBES_PER_ROW) + (_TUBES_PER_ROW - 1) * _TUBE_HSPACING_TO_WIDTH
-        self._relative_height: float = float(_NUM_ROWS * _TUBE_HEIGHT_TO_WIDTH) + (_NUM_ROWS - 1) * _TUBE_HEIGHT_TO_WIDTH * _TUBE_VSPACING_TO_HEIGHT
+        self._relative_width: float = float(self._tubes_per_row) + (self._tubes_per_row - 1) * _TUBE_HSPACING_TO_WIDTH
+        self._relative_height: float = float(_NUM_ROWS * self._tube_depth) + (_NUM_ROWS - 1) * self._tube_depth * _TUBE_VSPACING_TO_HEIGHT
     
     def draw_tube(self,
             surface: pygame.Surface,
@@ -80,13 +80,13 @@ class GameBoardView():
 
         # RELATIVE_WIDTH is in units of test tube width.
         tube_width = width / self._relative_width
-        tube_height = _TUBE_HEIGHT_TO_WIDTH * tube_width
+        tube_height = self._tube_depth * tube_width
         hspacing = _TUBE_HSPACING_TO_WIDTH * tube_width
         vspacing = _TUBE_VSPACING_TO_HEIGHT * tube_height
 
         tube_index = 0
         for row in range(_NUM_ROWS):
-            for tube in range(_TUBES_PER_ROW):
+            for tube in range(self._tubes_per_row):
                 # Handle the case where the number of tubes doesn't evenly divide into rows.
                 if tube_index >= len(self._board.tubes):
                     break
