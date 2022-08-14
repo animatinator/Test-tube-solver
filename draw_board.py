@@ -54,22 +54,26 @@ class GameBoardView():
             pygame.draw.rect(
                 surface, colour,
                 pygame.Rect(position[0], ypos, size[0], element_size))
-
-    def draw(self, surface: pygame.Surface):
-        aspect_ratio = size[0] / size[1]
+    
+    def _compute_board_rect(self, screen_dims: Tuple[int, int]) -> Tuple[Tuple[int, int], Tuple[int, int]]:
+        aspect_ratio = screen_dims[0] / screen_dims[1]
         if aspect_ratio > _BOARD_ASPECT_RATIO:
             # Vertically constrained
-            screen_height = size[1]
+            screen_height = screen_dims[1]
             height = int(screen_height * (_RELATIVE_HEIGHT / _RELATIVE_PADDED_HEIGHT))
             width = int(height * _BOARD_ASPECT_RATIO)
             pass
         else:
             # Horizontally constrained
-            screen_width = size[0]
+            screen_width = screen_dims[0]
             width = int(screen_width * (_RELATIVE_WIDTH / _RELATIVE_PADDED_WIDTH))
             height = int(width / _BOARD_ASPECT_RATIO)
             pass
-        topleft = (size[0] / 2 - width / 2, size[1] / 2 - height / 2)
+        topleft = (screen_dims[0] / 2 - width / 2, screen_dims[1] / 2 - height / 2)
+        return ((width, height), topleft)
+
+    def draw(self, surface: pygame.Surface):
+        ((width, height), topleft) = self._compute_board_rect(size)
 
         # RELATIVE_WIDTH is in units of test tube width.
         tube_width = width / _RELATIVE_WIDTH
