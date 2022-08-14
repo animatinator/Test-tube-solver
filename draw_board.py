@@ -25,11 +25,6 @@ _TUBES_PER_ROW: int = int((constants.NUM_TUBES + _NUM_ROWS - 1) / _NUM_ROWS)
 # e.g. width is num tubes + (num padding * padding as fraction of tube width)
 _RELATIVE_WIDTH: float = float(_TUBES_PER_ROW) + (_TUBES_PER_ROW - 1) * _TUBE_HSPACING_TO_WIDTH
 _RELATIVE_HEIGHT: float = float(_NUM_ROWS * _TUBE_HEIGHT_TO_WIDTH) + (_NUM_ROWS - 1) * _TUBE_HEIGHT_TO_WIDTH * _TUBE_VSPACING_TO_HEIGHT
-# Aspect ratio of the board itself
-_BOARD_ASPECT_RATIO = _RELATIVE_WIDTH / _RELATIVE_HEIGHT
-# Relative sizes once we include padding.
-_RELATIVE_PADDED_WIDTH: float = _RELATIVE_WIDTH * (1.0 + _BOARD_PADDING_RATIO_TO_SIZE)
-_RELATIVE_PADDED_HEIGHT: float = _RELATIVE_HEIGHT * (1.0 + _BOARD_PADDING_RATIO_TO_SIZE)
 
 size = (500, 400)
 
@@ -57,17 +52,24 @@ class GameBoardView():
     
     def _compute_board_rect(self, screen_dims: Tuple[int, int]) -> Tuple[Tuple[int, int], Tuple[int, int]]:
         aspect_ratio = screen_dims[0] / screen_dims[1]
-        if aspect_ratio > _BOARD_ASPECT_RATIO:
+
+        # Relative horizontal and vertical once we include padding.
+        relative_padded_width: float = _RELATIVE_WIDTH * (1.0 + _BOARD_PADDING_RATIO_TO_SIZE)
+        relative_padded_height: float = _RELATIVE_HEIGHT * (1.0 + _BOARD_PADDING_RATIO_TO_SIZE)
+        # Aspect ratio of the board itself
+        board_aspect_ratio = _RELATIVE_WIDTH / _RELATIVE_HEIGHT
+
+        if aspect_ratio > board_aspect_ratio:
             # Vertically constrained
             screen_height = screen_dims[1]
-            height = int(screen_height * (_RELATIVE_HEIGHT / _RELATIVE_PADDED_HEIGHT))
-            width = int(height * _BOARD_ASPECT_RATIO)
+            height = int(screen_height * (_RELATIVE_HEIGHT / relative_padded_height))
+            width = int(height * board_aspect_ratio)
             pass
         else:
             # Horizontally constrained
             screen_width = screen_dims[0]
-            width = int(screen_width * (_RELATIVE_WIDTH / _RELATIVE_PADDED_WIDTH))
-            height = int(width / _BOARD_ASPECT_RATIO)
+            width = int(screen_width * (_RELATIVE_WIDTH / relative_padded_width))
+            height = int(width / board_aspect_ratio)
             pass
         topleft = (screen_dims[0] / 2 - width / 2, screen_dims[1] / 2 - height / 2)
         return ((width, height), topleft)
