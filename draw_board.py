@@ -1,3 +1,4 @@
+import argparse
 import colour_mapping
 import constants
 import pygame
@@ -130,9 +131,13 @@ class BoardDisplayApp:
         pygame.quit()
 
 
-if __name__ == '__main__':
-    # TODO: Make dynamically configurable.
-    board_path = "boards/random.json"
-    board = state.load_from_file(board_path).board
+if __name__ == '__main__':    
+    parser = argparse.ArgumentParser(description='Display a test tube game solution.')
+    parser.add_argument(
+        '--board_path', action='store', type=str, required=True,
+        help='The path to the board to display')
+    args = parser.parse_args()
+
+    board = state.load_from_file(args.board_path).board
     app = BoardDisplayApp(board, size=_STARTING_SIZE)
     app.run()
