@@ -1,4 +1,3 @@
-import colour_mapping
 import constants
 import dataclasses
 from enum import Enum
@@ -45,14 +44,6 @@ def encode(puzzle: SavedPuzzle) -> str:
         _COLOURS_KEY: puzzle.colours,
         _TUBE_BOARD_KEY: [{_TUBE_STATE_KEY: tube.state} for tube in puzzle.board.tubes]}
     return json.dumps(flattened)
-
-
-def encode_board(board: TubeBoard) -> str:
-    """Encode a board as a JSON string.
-    
-    This is needed because default JSON encodinga/decoding doesn't handle dataclasses.
-    """
-    return encode(SavedPuzzle(board, colour_mapping.get_default_colours()))
 
 def decode(json_str: str) -> SavedPuzzle:
     """Decode a board from a JSON string.
