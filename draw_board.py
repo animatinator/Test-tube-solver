@@ -20,11 +20,6 @@ _BOARD_PADDING_RATIO_TO_SIZE = 0.2
 _TUBE_HEIGHT_TO_WIDTH: int = constants.TUBE_DEPTH
 _NUM_ROWS = constants.NUM_ROWS
 _TUBES_PER_ROW: int = int((constants.NUM_TUBES + _NUM_ROWS - 1) / _NUM_ROWS)
-# Calculate the relative width and height of the board.
-# Units are effectively tube widths.
-# e.g. width is num tubes + (num padding * padding as fraction of tube width)
-_RELATIVE_WIDTH: float = float(_TUBES_PER_ROW) + (_TUBES_PER_ROW - 1) * _TUBE_HSPACING_TO_WIDTH
-_RELATIVE_HEIGHT: float = float(_NUM_ROWS * _TUBE_HEIGHT_TO_WIDTH) + (_NUM_ROWS - 1) * _TUBE_HEIGHT_TO_WIDTH * _TUBE_VSPACING_TO_HEIGHT
 
 size = (500, 400)
 
@@ -36,6 +31,12 @@ pygame.display.set_caption("Test tube solver: board view")
 class GameBoardView():
     def __init__(self, board: state.TubeBoard):
         self._board = board
+
+        # Calculate the relative width and height of the board.
+        # Units are effectively tube widths.
+        # e.g. width is num tubes + (num padding * padding as fraction of tube width)
+        self._relative_width: float = float(_TUBES_PER_ROW) + (_TUBES_PER_ROW - 1) * _TUBE_HSPACING_TO_WIDTH
+        self._relative_height: float = float(_NUM_ROWS * _TUBE_HEIGHT_TO_WIDTH) + (_NUM_ROWS - 1) * _TUBE_HEIGHT_TO_WIDTH * _TUBE_VSPACING_TO_HEIGHT
     
     def draw_tube(self,
             surface: pygame.Surface,
@@ -54,21 +55,21 @@ class GameBoardView():
         aspect_ratio = screen_dims[0] / screen_dims[1]
 
         # Relative horizontal and vertical once we include padding.
-        relative_padded_width: float = _RELATIVE_WIDTH * (1.0 + _BOARD_PADDING_RATIO_TO_SIZE)
-        relative_padded_height: float = _RELATIVE_HEIGHT * (1.0 + _BOARD_PADDING_RATIO_TO_SIZE)
+        relative_padded_width: float = self._relative_width * (1.0 + _BOARD_PADDING_RATIO_TO_SIZE)
+        relative_padded_height: float = self._relative_height * (1.0 + _BOARD_PADDING_RATIO_TO_SIZE)
         # Aspect ratio of the board itself
-        board_aspect_ratio = _RELATIVE_WIDTH / _RELATIVE_HEIGHT
+        board_aspect_ratio = self._relative_width / self._relative_height
 
         if aspect_ratio > board_aspect_ratio:
             # Vertically constrained
             screen_height = screen_dims[1]
-            height = int(screen_height * (_RELATIVE_HEIGHT / relative_padded_height))
+            height = int(screen_height * (self._relative_height / relative_padded_height))
             width = int(height * board_aspect_ratio)
             pass
         else:
             # Horizontally constrained
             screen_width = screen_dims[0]
-            width = int(screen_width * (_RELATIVE_WIDTH / relative_padded_width))
+            width = int(screen_width * (self._relative_width / relative_padded_width))
             height = int(width / board_aspect_ratio)
             pass
         topleft = (screen_dims[0] / 2 - width / 2, screen_dims[1] / 2 - height / 2)
@@ -78,7 +79,7 @@ class GameBoardView():
         ((width, height), topleft) = self._compute_board_rect(size)
 
         # RELATIVE_WIDTH is in units of test tube width.
-        tube_width = width / _RELATIVE_WIDTH
+        tube_width = width / self._relative_width
         tube_height = _TUBE_HEIGHT_TO_WIDTH * tube_width
         hspacing = _TUBE_HSPACING_TO_WIDTH * tube_width
         vspacing = _TUBE_VSPACING_TO_HEIGHT * tube_height
