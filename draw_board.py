@@ -22,6 +22,9 @@ _STARTING_SIZE = (500, 400)
 
 class GameBoardView():
     def __init__(self, board: state.TubeBoard, colours: List[str]):
+        self.set_state(board, colours)
+
+    def set_state(self, board: state.TubeBoard, colours: List[str]):
         self._board = board
         self._colours = colours
 
@@ -112,12 +115,22 @@ class BoardDisplayApp:
             size: Tuple[int, int]):
         self._board = board
         self._colours = colours
-        # TODO: Integrate the solution into the view.
+
         self._solution = solution
-        print(self._solution)
+
         self._size = size
         self._board_view = GameBoardView(board, colours)
+
         self._clock = pygame.time.Clock()
+
+        self._solution_index = 0
+        self._solution_frames = self._generate_solution_frames(self._board, self._solution)
+
+    def _generate_solution_frames(self, board: state.TubeBoard, solution: List[moves.Move]) -> List[state.TubeBoard]:
+        frames = [board]
+        for i in range(0, len(solution)):
+            frames.append(moves.apply_move(frames[i], solution[i]))
+        return frames
 
     def run(self):
         pygame.init()
@@ -138,6 +151,13 @@ class BoardDisplayApp:
                 if event.type == pygame.VIDEORESIZE:
                     self._size = (event.w, event.h)
                     surface = pygame.display.set_mode(self._size, pygame.RESIZABLE)
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_LEFT and self._solution_index > 0:
+                        self._solution_index -= 1
+                        self._board_view.set_state(self._solution_frames[self._solution_index], self._colours)
+                    elif event.key == pygame.K_RIGHT and self._solution_index < len(self._solution_frames) - 1:
+                        self._solution_index += 1
+                        self._board_view.set_state(self._solution_frames[self._solution_index], self._colours)
 
             self._clock.tick(10)
 
