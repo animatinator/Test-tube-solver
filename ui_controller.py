@@ -3,6 +3,7 @@ from typing import Callable, List
 
 import controller_interface
 import moves
+import solution_printer
 import solver
 import state
 from typing import List
@@ -47,6 +48,8 @@ class UiController(controller_interface.Controller):
     def run_solver(self, error_callback: Callable[[str], None]):
         puzzle = self._model.get_tube_board()
         solution = solver.solve(puzzle)
+
+        print(solution_printer.format_solution(solution))
 
         if solution is None:
             error_callback("no solution could be found")
