@@ -3,7 +3,7 @@ import constants
 import moves
 import pygame
 import state
-from typing import List, Tuple
+from typing import List, Set, Tuple
 
 _BG_COLOUR = (0, 0, 0)
 
@@ -39,7 +39,8 @@ class GameBoardView():
             surface: pygame.Surface,
             tube_state: state.TubeState,
             position: Tuple[int, int],
-            size: Tuple[int, int]):
+            size: Tuple[int, int],
+            highlight: bool):
         elements_per_tube = len(tube_state.state)
         tube_height = size[1]
 
@@ -55,8 +56,9 @@ class GameBoardView():
                 surface, colour,
                 pygame.Rect(position[0], ypos, size[0], (next_ypos - ypos) + 1))
         
+        outline_colour = pygame.Color("red") if highlight else pygame.Color("white")
         pygame.draw.rect(
-            surface, pygame.Color("white"), (position[0], position[1], size[0], size[1]), 2)
+            surface, outline_colour, (position[0], position[1], size[0], size[1]), 2)
     
     def _compute_board_rect(self, screen_dims: Tuple[int, int]) -> Tuple[Tuple[int, int], Tuple[int, int]]:
         """Returns ((width, height), (left, top))."""
@@ -83,7 +85,7 @@ class GameBoardView():
         topleft = (screen_dims[0] / 2 - width / 2, screen_dims[1] / 2 - height / 2)
         return ((width, height), topleft)
 
-    def draw(self, surface: pygame.Surface):
+    def draw(self, surface: pygame.Surface, highlight_tubes: Set[int]):
         ((width, height), topleft) = self._compute_board_rect((surface.get_width(), surface.get_height()))
 
         # RELATIVE_WIDTH is in units of test tube width.
@@ -105,7 +107,8 @@ class GameBoardView():
                     surface,
                     self._board.tubes[tube_index],
                     (xpos, ypos),
-                    (tube_width, tube_height))
+                    (tube_width, tube_height),
+                    highlight=tube_index in highlight_tubes)
                 tube_index += 1
 
 
@@ -149,7 +152,11 @@ class BoardDisplayApp:
         while running:
             surface.fill(_BG_COLOUR)
 
-            self._board_view.draw(surface)
+            highlight_tubes = {}
+            if self._solution_index < len(self._solution):
+                current_move = self._solution[self._solution_index]
+                highlight_tubes=[current_move.src, current_move.dest]
+            self._board_view.draw(surface, highlight_tubes)
 
             pygame.display.update()
             for event in pygame.event.get():
