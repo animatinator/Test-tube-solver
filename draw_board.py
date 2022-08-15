@@ -1,9 +1,10 @@
 import argparse
 import constants
+import math
 import moves
 import pygame
 import state
-from typing import List, Set, Tuple
+from typing import List, Tuple
 
 _BG_COLOUR = (0, 0, 0)
 
@@ -84,9 +85,24 @@ class GameBoardView():
             pass
         topleft = (screen_dims[0] / 2 - width / 2, screen_dims[1] / 2 - height / 2)
         return ((width, height), topleft)
+    
+    def _draw_arrow(self, surface: pygame.Surface, src: Tuple[int, int], dest: Tuple[int, int]):
+        arrow_size = 10
+        disp = (float(dest[0] - src[0]), float(dest[1] - src[1]))
+        mag = math.sqrt((disp[0] ** 2) + (disp[1] ** 2))
+        dv = (disp[0] / mag, disp[1] / mag)
 
-    def draw(self, surface: pygame.Surface, highlight_tubes: Set[int]):
-        ((width, height), topleft) = self._compute_board_rect((surface.get_width(), surface.get_height()))
+        head = (dv[0] * arrow_size, dv[1] * arrow_size)
+        start = (dest[0] - head[0]*2, dest[1] - head[1]*2)
+        right = (start[0] + head[1], start[1] - head[0])
+        left = (start[0] - head[1], start[1] + head[0])
+        
+        pygame.draw.line(surface, pygame.Color("white"), src, start, 5)
+        pygame.draw.polygon(surface, pygame.Color("white"), [left, right, dest])
+
+    def draw(self, surface: pygame.Surface, move: moves.Move):
+        ((width, _), topleft) = self._compute_board_rect(
+            (surface.get_width(), surface.get_height()))
 
         # RELATIVE_WIDTH is in units of test tube width.
         tube_width = width / self._relative_width
@@ -95,6 +111,8 @@ class GameBoardView():
         vspacing = _TUBE_VSPACING_TO_HEIGHT * tube_height
 
         tube_index = 0
+        arrow_start = None
+        arrow_end = None
         for row in range(_NUM_ROWS):
             for tube in range(self._tubes_per_row):
                 # Handle the case where the number of tubes doesn't evenly divide into rows.
@@ -103,13 +121,30 @@ class GameBoardView():
 
                 xpos = topleft[0] + tube * (tube_width + hspacing)
                 ypos = topleft[1] + row * (tube_height + vspacing)
+                centre = (xpos + (tube_width / 2), ypos + (tube_height / 2))
+
+                # If this tube is part of the current move, highlight it and record its position
+                # for drawing the arrow.
+                highlight = False
+                if move:
+                    if tube_index == move.src:
+                        arrow_start = centre
+                        highlight = True
+                    if tube_index == move.dest:
+                        arrow_end = centre
+                        highlight = True
+
                 self.draw_tube(
                     surface,
                     self._board.tubes[tube_index],
                     (xpos, ypos),
                     (tube_width, tube_height),
-                    highlight=tube_index in highlight_tubes)
+                    highlight)
                 tube_index += 1
+
+        # Draw an arrow indicating the current move.            
+        if arrow_start and arrow_end:
+            self._draw_arrow(surface, arrow_start, arrow_end)
 
 
 class BoardDisplayApp:
@@ -152,11 +187,10 @@ class BoardDisplayApp:
         while running:
             surface.fill(_BG_COLOUR)
 
-            highlight_tubes = {}
+            current_move = None
             if self._solution_index < len(self._solution):
                 current_move = self._solution[self._solution_index]
-                highlight_tubes=[current_move.src, current_move.dest]
-            self._board_view.draw(surface, highlight_tubes)
+            self._board_view.draw(surface, current_move)
 
             pygame.display.update()
             for event in pygame.event.get():
