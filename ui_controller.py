@@ -1,8 +1,8 @@
+import subprocess
 from typing import List
 
 import controller_interface
 import moves
-import solution_printer
 import solver
 import state
 from typing import List
@@ -47,4 +47,11 @@ class UiController(controller_interface.Controller):
     def run_solver(self):
         puzzle = self._model.get_tube_board()
         solution = solver.solve(puzzle)
-        print(solution_printer.format_solution(solution))
+
+        # TODO: Show an error message if there's no solution.
+
+        encoded_state = state.encode(
+            state.SavedPuzzle(self._model.get_tube_board(), self._model.get_colours()))
+        encoded_solution = moves.encode_solution(solution)
+
+        subprocess.call(["python", "draw_board.py", "--board", encoded_state, "--solution", encoded_solution])

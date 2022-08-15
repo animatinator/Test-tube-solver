@@ -5,6 +5,8 @@ import pygame
 import state
 from typing import List, Tuple
 
+import pdb
+
 _BG_COLOUR = (0, 0, 0)
 
 # Horizontal and vertical spacing as fractions of the tube width and height.
@@ -161,7 +163,7 @@ if __name__ == '__main__':
     if args.board_path is not None:
         loaded_state = state.load_from_file(args.board_path)
     else:
-        assert(args.board is not None, "Must specify one of --board or --board_path.")
+        assert(args.board is not None)
         loaded_state = state.decode(args.board)
     solution = moves.decode_solution(args.solution) if args.solution else []
     app = BoardDisplayApp(loaded_state.board, loaded_state.colours, solution, size=_STARTING_SIZE)
