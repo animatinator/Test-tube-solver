@@ -1,5 +1,6 @@
 import argparse
 import constants
+import moves
 import pygame
 import state
 from typing import List, Tuple
@@ -101,9 +102,17 @@ class BoardDisplayApp:
 
     This sets up Pygame, handles events and delegates to the GameBoardView for drawing.
     """
-    def __init__(self, board: state.TubeBoard, colours: List[str], size: Tuple[int, int]):
+    def __init__(
+            self,
+            board: state.TubeBoard,
+            colours: List[str],
+            solution: List[moves.Move],
+            size: Tuple[int, int]):
         self._board = board
         self._colours = colours
+        # TODO: Integrate the solution into the view.
+        self._solution = solution
+        print(self._solution)
         self._size = size
         self._board_view = GameBoardView(board, colours)
         self._clock = pygame.time.Clock()
@@ -136,10 +145,24 @@ class BoardDisplayApp:
 if __name__ == '__main__':    
     parser = argparse.ArgumentParser(description='Display a test tube game solution.')
     parser.add_argument(
-        '--board_path', action='store', type=str, required=True,
-        help='The path to the board to display')
+        '--board_path', action='store', type=str, required=False,
+        help='The path to the board to display. Not compatible with --board.')
+    parser.add_argument(
+        '--board', action='store', type=str, required=False,
+        help='The encoded board to display. Not compatible with --board_path.')
+    parser.add_argument(
+        '--solution', action='store', type=str, required=False,
+        help='The solution to display')
     args = parser.parse_args()
 
-    loaded_state = state.load_from_file(args.board_path)
-    app = BoardDisplayApp(loaded_state.board, loaded_state.colours, size=_STARTING_SIZE)
+    if (args.board_path is not None) == (args.board is not None):
+        raise ValueError("Must specify exactly one of --board or --board_path.")
+
+    if args.board_path is not None:
+        loaded_state = state.load_from_file(args.board_path)
+    else:
+        assert(args.board is not None, "Must specify one of --board or --board_path.")
+        loaded_state = state.decode(args.board)
+    solution = moves.decode_solution(args.solution) if args.solution else []
+    app = BoardDisplayApp(loaded_state.board, loaded_state.colours, solution, size=_STARTING_SIZE)
     app.run()
