@@ -141,7 +141,7 @@ class BoardDisplayApp:
     def run(self):
         pygame.init()
         surface = pygame.display.set_mode(self._size, pygame.RESIZABLE)
-        pygame.display.set_caption("Test tube solver: board view")
+        pygame.display.set_caption("Test tube solver 3000: solution viewer")
 
         running = True
 
