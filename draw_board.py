@@ -5,8 +5,6 @@ import pygame
 import state
 from typing import List, Tuple
 
-import pdb
-
 _BG_COLOUR = (0, 0, 0)
 
 # Horizontal and vertical spacing as fractions of the tube width and height.
