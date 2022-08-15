@@ -54,6 +54,9 @@ class GameBoardView():
             pygame.draw.rect(
                 surface, colour,
                 pygame.Rect(position[0], ypos, size[0], (next_ypos - ypos) + 1))
+        
+        pygame.draw.rect(
+            surface, pygame.Color("white"), (position[0], position[1], size[0], size[1]), 2)
     
     def _compute_board_rect(self, screen_dims: Tuple[int, int]) -> Tuple[Tuple[int, int], Tuple[int, int]]:
         """Returns ((width, height), (left, top))."""
