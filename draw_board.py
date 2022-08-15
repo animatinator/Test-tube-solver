@@ -42,14 +42,20 @@ class GameBoardView():
             tube_state: state.TubeState,
             position: Tuple[int, int],
             size: Tuple[int, int]):
-        element_size = size[1] / len(tube_state.state)
+        elements_per_tube = len(tube_state.state)
+        tube_height = size[1]
+
         for i, element in enumerate(tube_state.state):
-            ypos = position[1] + i * element_size
+            # Draw between this position and the next to avoid gaps due to rounding.
+            ypos = position[1] + (i/elements_per_tube) * tube_height
+            next_ypos = position[1] + ((i+1)/elements_per_tube) * tube_height
+
             colour = 'black' if element == 0 else self._colours[element - 1]
             colour = pygame.Color(colour)
+
             pygame.draw.rect(
                 surface, colour,
-                pygame.Rect(position[0], ypos, size[0], element_size))
+                pygame.Rect(position[0], ypos, size[0], next_ypos - ypos))
     
     def _compute_board_rect(self, screen_dims: Tuple[int, int]) -> Tuple[Tuple[int, int], Tuple[int, int]]:
         """Returns ((width, height), (left, top))."""
