@@ -1,4 +1,5 @@
 import tkinter as tk
+from tkinter import messagebox
 
 import colour_picker
 import controller_interface
@@ -25,8 +26,12 @@ class MainWindow(tk.Frame):
         self._controller = None
 
         self._solve_button = tk.Button(
-            self, text="Solve!", background="green", command=lambda: self._controller.run_solver())
+            self, text="Solve!", background="green",
+            command=lambda: self._controller.run_solver(self._handle_solution_error))
         self._solve_button.grid(row=2, column=0, sticky="nsew")
+    
+    def _handle_solution_error(self, message: str):
+        messagebox.showerror("Solver failed!", f"The solver failed: '{message}'.")
     
     def set_controller(self, controller: controller_interface.Controller):
         self._controller = controller

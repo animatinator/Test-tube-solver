@@ -1,5 +1,5 @@
 import subprocess
-from typing import List
+from typing import Callable, List
 
 import controller_interface
 import moves
@@ -44,11 +44,16 @@ class UiController(controller_interface.Controller):
         self._model.update_tube_board(loaded_puzzle.board)
         self._view.reset_to_match_model()
 
-    def run_solver(self):
+    def run_solver(self, error_callback: Callable[[str], None]):
         puzzle = self._model.get_tube_board()
         solution = solver.solve(puzzle)
 
-        # TODO: Show an error message if there's no solution.
+        if solution is None:
+            error_callback("no solution could be found")
+            return
+        elif solution == []:
+            error_callback("the puzzle is already solved")
+            return
 
         encoded_state = state.encode(
             state.SavedPuzzle(self._model.get_tube_board(), self._model.get_colours()))
